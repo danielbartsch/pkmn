@@ -1,5 +1,6 @@
 import * as textFormat from "./textFormat"
 import { Menu, renderMenu, selectMenu, menu, Attack, attacks } from "./menu"
+import { renderLifeBar } from "./lifeBar"
 
 type Player = {
   life: number
@@ -74,40 +75,7 @@ const renderTextAnimation = ({
   }
 }
 
-const renderLifeBar = ({ width, current, max }) => {
-  const lifePercentage = current / max
-  const lifeRemainingRelative = lifePercentage * width
-  const format =
-    lifePercentage < 0.125
-      ? textFormat.red
-      : lifePercentage < 0.5
-      ? textFormat.yellow
-      : textFormat.green
-
-  process.stdout.write(
-    format(
-      "█".repeat(Math.floor(lifeRemainingRelative)) +
-        getFractionLifeBar(
-          Math.ceil(lifeRemainingRelative) - lifeRemainingRelative
-        )
-    ) + "\n"
-  )
-}
-
-const getFractionLifeBar = (fraction) => {
-  if (fraction === 0) return ""
-  if (fraction < 0.125) return "█"
-  if (fraction < 0.25) return "▉"
-  if (fraction < 0.375) return "▊"
-  if (fraction < 0.5) return "▋"
-  if (fraction < 0.625) return "▌"
-  if (fraction < 0.75) return "▍"
-  if (fraction < 0.875) return "▎"
-  if (fraction < 1) return "▏"
-  return " "
-}
-
-const getAnimatedLifeBar = (lifeBar: "enemy" | "me") => {
+const getInterpolatedLife = (lifeBar: "enemy" | "me") => {
   const duration = Date.now() - gameState[lifeBar].lifeBarAnimation.startedAt
   const percentageAnimation =
     duration > gameState[lifeBar].lifeBarAnimation.duration
@@ -133,11 +101,11 @@ const render = (menu: Array<Menu>, selected: number) => {
   process.stdout.write("Enemy\n")
   renderLifeBar({
     width: WIDTH,
-    current: getAnimatedLifeBar("enemy"),
+    current: getInterpolatedLife("enemy"),
     max: gameState.enemy.lifeMax,
   })
 
-  const meLifeAnimated = getAnimatedLifeBar("me")
+  const meLifeAnimated = getInterpolatedLife("me")
   process.stdout.write(`\nYou (${meLifeAnimated}/${gameState.me.lifeMax})\n`)
   renderLifeBar({
     width: WIDTH,
