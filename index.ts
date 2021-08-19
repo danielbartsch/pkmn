@@ -75,19 +75,20 @@ const renderTextAnimation = ({
   }
 }
 
-const getInterpolatedLife = (lifeBar: "enemy" | "me") => {
-  const duration = Date.now() - gameState[lifeBar].lifeBarAnimation.startedAt
+const getInterpolatedLife = (
+  life: number,
+  lifeBarAnimation: Player["lifeBarAnimation"]
+) => {
+  const duration = Date.now() - lifeBarAnimation.startedAt
   const percentageAnimation =
-    duration > gameState[lifeBar].lifeBarAnimation.duration
+    duration > lifeBarAnimation.duration
       ? 0
-      : 1 - duration / gameState[lifeBar].lifeBarAnimation.duration
+      : 1 - duration / lifeBarAnimation.duration
 
   const value = Math.floor(
-    gameState[lifeBar].lifeBarAnimation.startedAt
-      ? gameState[lifeBar].life +
-          percentageAnimation *
-            (gameState[lifeBar].lifeBarAnimation.from - gameState[lifeBar].life)
-      : gameState[lifeBar].life
+    lifeBarAnimation.startedAt
+      ? life + percentageAnimation * (lifeBarAnimation.from - life)
+      : life
   )
   return value <= 0 ? 0 : value
 }
@@ -101,11 +102,17 @@ const render = (menu: Array<Menu>, selected: number) => {
   process.stdout.write("Enemy\n")
   renderLifeBar({
     width: WIDTH,
-    current: getInterpolatedLife("enemy"),
+    current: getInterpolatedLife(
+      gameState.enemy.life,
+      gameState.enemy.lifeBarAnimation
+    ),
     max: gameState.enemy.lifeMax,
   })
 
-  const meLifeAnimated = getInterpolatedLife("me")
+  const meLifeAnimated = getInterpolatedLife(
+    gameState.me.life,
+    gameState.me.lifeBarAnimation
+  )
   process.stdout.write(`\nYou (${meLifeAnimated}/${gameState.me.lifeMax})\n`)
   renderLifeBar({
     width: WIDTH,
