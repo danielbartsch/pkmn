@@ -116,10 +116,11 @@ const render = (menu: Array<Menu>, selected: number) => {
     max: gameState.enemy.lifeMax,
   })
 
-  process.stdout.write(`\nYou (${gameState.me.life}/${gameState.me.lifeMax})\n`)
+  const meLifeAnimated = getAnimatedLifeBar("me")
+  process.stdout.write(`\nYou (${meLifeAnimated}/${gameState.me.lifeMax})\n`)
   renderLifeBar({
     width: WIDTH,
-    current: getAnimatedLifeBar("me"),
+    current: meLifeAnimated,
     max: gameState.me.lifeMax,
   })
   process.stdout.write("\n")
