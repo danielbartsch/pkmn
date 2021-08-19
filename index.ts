@@ -93,13 +93,14 @@ const getAnimatedLifeBar = (lifebar: "enemy" | "me") => {
       ? 0
       : 1 - duration / gameState[lifebar].lifebarAnimation.duration
 
-  return Math.floor(
+  const value = Math.floor(
     gameState[lifebar].lifebarAnimation.startedAt
       ? gameState[lifebar].life +
           percentageAnimation *
             (gameState[lifebar].lifebarAnimation.from - gameState[lifebar].life)
       : gameState[lifebar].life
   )
+  return value <= 0 ? 0 : value
 }
 
 const WIDTH = 30
@@ -185,12 +186,12 @@ const attack = async (
     gameState[target].lifebarAnimation.startedAt = Date.now()
     gameState[target].life -= (isCritical ? 2 : 1) * menuEntry.damage
 
-    if (menuEntry.damage !== 0) {
-      await sleep(gameState[target].lifebarAnimation.duration)
-    }
-
     if (gameState[target].life <= 0) {
       gameState[target].life = 0
+    }
+
+    if (menuEntry.damage !== 0) {
+      await sleep(gameState[target].lifebarAnimation.duration)
     }
     if (isCritical) {
       await animateText({ text: "Critical hit!" })
