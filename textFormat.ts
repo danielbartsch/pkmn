@@ -1,5 +1,6 @@
 const RESET = "\x1b[0m"
-const getColorFormatter = (color) => (text) => color + text + RESET
+const getColorFormatter = (color: string) => (text: string) =>
+  color + text + RESET
 const bold = getColorFormatter("\x1b[1m")
 const dim = getColorFormatter("\x1b[2m")
 const underline = getColorFormatter("\x1b[4m")

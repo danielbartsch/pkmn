@@ -1,6 +1,14 @@
 import * as textFormat from "./textFormat"
 
-export const renderLifeBar = ({ width, current, max }) => {
+export const renderLifeBar = ({
+  width,
+  current,
+  max,
+}: {
+  width: number
+  current: number
+  max: number
+}) => {
   const lifePercentage = current / max
   const lifeRemainingRelative = lifePercentage * width
   const format =
