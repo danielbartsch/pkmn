@@ -76,19 +76,17 @@ const renderTextAnimation = ({
 }
 
 const getInterpolatedLife = (
-  life: number,
-  lifeBarAnimation: Player["lifeBarAnimation"]
+  targetLife: number,
+  { startedAt, duration, from: fromLife }: Player["lifeBarAnimation"]
 ) => {
-  const duration = Date.now() - lifeBarAnimation.startedAt
+  const passedTime = Date.now() - startedAt
   const percentageAnimation =
-    duration > lifeBarAnimation.duration
-      ? 0
-      : 1 - duration / lifeBarAnimation.duration
+    passedTime > duration ? 0 : 1 - passedTime / duration
 
   const value = Math.floor(
-    lifeBarAnimation.startedAt
-      ? life + percentageAnimation * (lifeBarAnimation.from - life)
-      : life
+    startedAt
+      ? targetLife + percentageAnimation * (fromLife - targetLife)
+      : targetLife
   )
   return value <= 0 ? 0 : value
 }
