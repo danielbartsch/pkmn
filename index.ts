@@ -154,10 +154,11 @@ const getTextRenderTime = (textAnimation: GameState["textAnimation"]) =>
   textAnimation.text.length * textAnimation.textSpeed + USER_READING_THRESHOLD
 
 const animateText = async (
-  textAnimation: Partial<GameState["textAnimation"]>
+  text: GameState["textAnimation"]["text"],
+  options: Partial<Omit<GameState["textAnimation"], "text">> = {}
 ) => {
-  textAnimation.startedAt = textAnimation.startedAt ?? Date.now()
-  gameState.textAnimation = { ...gameState.textAnimation, ...textAnimation }
+  options.startedAt = options.startedAt ?? Date.now()
+  gameState.textAnimation = { ...gameState.textAnimation, text, ...options }
   await sleep(getTextRenderTime(gameState.textAnimation))
   gameState.textAnimation = {
     ...gameState.textAnimation,
@@ -175,10 +176,9 @@ const attack = async (
   gameState: GameState,
   target: "enemy" | "me"
 ) => {
-  await animateText({
-    text:
-      (target === "enemy" ? "You use " : "Enemy uses ") + menuEntry.label + ".",
-  })
+  await animateText(
+    (target === "enemy" ? "You use " : "Enemy uses ") + menuEntry.label + "."
+  )
 
   if (Math.random() < menuEntry.chanceToSucceed) {
     const isCritical = Math.random() < menuEntry.chanceToCritical
@@ -197,10 +197,10 @@ const attack = async (
       await sleep(gameState[target].lifeBarAnimation.duration)
     }
     if (isCritical) {
-      await animateText({ text: "Critical hit!" })
+      await animateText("Critical hit!")
     }
   } else {
-    await animateText({ text: menuEntry.label + " missed!" })
+    await animateText(menuEntry.label + " missed!")
   }
 }
 
@@ -251,10 +251,10 @@ process.stdin.on("data", async function (key: string) {
               gameState.selected = [0]
               if (menuEntry.key === "flee") {
                 if (Math.random() < menuEntry.chanceToSucceed) {
-                  await animateText({ text: "You fled!" })
+                  await animateText("You fled!")
                   process.exit(0)
                 } else {
-                  await animateText({ text: "Couldn't flee." })
+                  await animateText("Couldn't flee.")
                 }
               } else {
                 await attack(menuEntry, gameState, "enemy")
@@ -262,11 +262,10 @@ process.stdin.on("data", async function (key: string) {
 
               if (gameState.enemy.life <= 0) {
                 gameState.ownTurn = false
-                await animateText({
-                  text:
-                    "Enemy cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
-                    textFormat.green("You won!"),
-                })
+                await animateText(
+                  "Enemy cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
+                    textFormat.green("You won!")
+                )
                 process.exit(0)
               }
 
@@ -277,11 +276,10 @@ process.stdin.on("data", async function (key: string) {
               )
 
               if (gameState.me.life <= 0) {
-                await animateText({
-                  text:
-                    "You cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
-                    textFormat.red("You lost!"),
-                })
+                await animateText(
+                  "You cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
+                    textFormat.red("You lost!")
+                )
                 process.exit(0)
               }
               gameState.ownTurn = true
