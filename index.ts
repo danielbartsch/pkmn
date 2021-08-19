@@ -4,7 +4,7 @@ import { Menu, renderMenu, selectMenu, menu, Attack, attacks } from "./menu"
 type Player = {
   life: number
   lifeMax: number
-  lifebarAnimation: {
+  lifeBarAnimation: {
     startedAt: number | null
     from: number | null
     duration: number
@@ -29,7 +29,7 @@ const gameState: GameState = {
   enemy: {
     life: 100,
     lifeMax: 100,
-    lifebarAnimation: {
+    lifeBarAnimation: {
       startedAt: null,
       from: null,
       duration: 1000,
@@ -38,7 +38,7 @@ const gameState: GameState = {
   me: {
     life: 100,
     lifeMax: 100,
-    lifebarAnimation: {
+    lifeBarAnimation: {
       startedAt: null,
       from: null,
       duration: 1000,
@@ -107,19 +107,19 @@ const getFractionLifeBar = (fraction) => {
   return " "
 }
 
-const getAnimatedLifeBar = (lifebar: "enemy" | "me") => {
-  const duration = Date.now() - gameState[lifebar].lifebarAnimation.startedAt
+const getAnimatedLifeBar = (lifeBar: "enemy" | "me") => {
+  const duration = Date.now() - gameState[lifeBar].lifeBarAnimation.startedAt
   const percentageAnimation =
-    duration > gameState[lifebar].lifebarAnimation.duration
+    duration > gameState[lifeBar].lifeBarAnimation.duration
       ? 0
-      : 1 - duration / gameState[lifebar].lifebarAnimation.duration
+      : 1 - duration / gameState[lifeBar].lifeBarAnimation.duration
 
   const value = Math.floor(
-    gameState[lifebar].lifebarAnimation.startedAt
-      ? gameState[lifebar].life +
+    gameState[lifeBar].lifeBarAnimation.startedAt
+      ? gameState[lifeBar].life +
           percentageAnimation *
-            (gameState[lifebar].lifebarAnimation.from - gameState[lifebar].life)
-      : gameState[lifebar].life
+            (gameState[lifeBar].lifeBarAnimation.from - gameState[lifeBar].life)
+      : gameState[lifeBar].life
   )
   return value <= 0 ? 0 : value
 }
@@ -209,8 +209,8 @@ const attack = async (
   if (Math.random() < menuEntry.chanceToSucceed) {
     const isCritical = Math.random() < menuEntry.chanceToCritical
 
-    gameState[target].lifebarAnimation.from = gameState[target].life
-    gameState[target].lifebarAnimation.startedAt = Date.now()
+    gameState[target].lifeBarAnimation.from = gameState[target].life
+    gameState[target].lifeBarAnimation.startedAt = Date.now()
     gameState[target].life -= Math.round(
       (isCritical ? 2 : 1) * menuEntry.damage * variancePercent()
     )
@@ -220,7 +220,7 @@ const attack = async (
     }
 
     if (menuEntry.damage !== 0) {
-      await sleep(gameState[target].lifebarAnimation.duration)
+      await sleep(gameState[target].lifeBarAnimation.duration)
     }
     if (isCritical) {
       await animateText({ text: "Critical hit!" })
