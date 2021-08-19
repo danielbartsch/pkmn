@@ -76,14 +76,35 @@ const renderTextAnimation = ({
 
 const renderLifeBar = ({ width, current, max }) => {
   const lifePercentage = current / max
-  const lifeRemainingRelative = Math.ceil(lifePercentage * width)
+  const lifeRemainingRelative = lifePercentage * width
   const format =
     lifePercentage < 0.125
       ? textFormat.red
       : lifePercentage < 0.5
       ? textFormat.yellow
       : textFormat.green
-  process.stdout.write(format("▉".repeat(lifeRemainingRelative)) + "\n")
+
+  process.stdout.write(
+    format(
+      "█".repeat(Math.floor(lifeRemainingRelative)) +
+        getFractionLifeBar(
+          Math.ceil(lifeRemainingRelative) - lifeRemainingRelative
+        )
+    ) + "\n"
+  )
+}
+
+const getFractionLifeBar = (fraction) => {
+  if (fraction === 0) return ""
+  if (fraction < 0.125) return "█"
+  if (fraction < 0.25) return "▉"
+  if (fraction < 0.375) return "▊"
+  if (fraction < 0.5) return "▋"
+  if (fraction < 0.625) return "▌"
+  if (fraction < 0.75) return "▍"
+  if (fraction < 0.875) return "▎"
+  if (fraction < 1) return "▏"
+  return " "
 }
 
 const getAnimatedLifeBar = (lifebar: "enemy" | "me") => {
@@ -141,7 +162,7 @@ const render = (menu: Array<Menu>, selected: number) => {
 
 const run = async () => {
   clear({ width, height })
-  clear({ width: WIDTH + 1, height: HEIGHT + 1, char: "▉" })
+  clear({ width: WIDTH + 1, height: HEIGHT + 1, char: "█" })
   while (true) {
     render(
       selectMenu(menu, gameState.selected),
