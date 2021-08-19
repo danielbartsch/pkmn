@@ -169,6 +169,11 @@ const animateText = async (
   }
 }
 
+const variancePercent = () => {
+  const variance = 0.1
+  return Math.random() * variance + (1 - variance / 2)
+}
+
 const attack = async (
   menuEntry: Attack,
   gameState: GameState,
@@ -184,7 +189,9 @@ const attack = async (
 
     gameState[target].lifebarAnimation.from = gameState[target].life
     gameState[target].lifebarAnimation.startedAt = Date.now()
-    gameState[target].life -= (isCritical ? 2 : 1) * menuEntry.damage
+    gameState[target].life -= Math.round(
+      (isCritical ? 2 : 1) * menuEntry.damage * variancePercent()
+    )
 
     if (gameState[target].life <= 0) {
       gameState[target].life = 0
