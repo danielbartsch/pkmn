@@ -107,14 +107,16 @@ const render = (menu: Array<Menu>, selected: number) => {
     max: gameState.enemy.lifeMax,
   })
 
-  const meLifeAnimated = getInterpolatedLife(
+  const meLifeInterpolated = getInterpolatedLife(
     gameState.me.life,
     gameState.me.lifeBarAnimation
   )
-  process.stdout.write(`\nYou (${meLifeAnimated}/${gameState.me.lifeMax})\n`)
+  process.stdout.write(
+    `\nYou (${meLifeInterpolated}/${gameState.me.lifeMax})\n`
+  )
   renderLifeBar({
     width: WIDTH,
-    current: meLifeAnimated,
+    current: meLifeInterpolated,
     max: gameState.me.lifeMax,
   })
   process.stdout.write("\n")
