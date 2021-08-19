@@ -1,0 +1,17 @@
+{
+  "name": "graph",
+  "version": "1.0.0",
+  "description": "Create a PNG file that displays a graph",
+  "main": "index.ts",
+  "scripts": {
+    "start": "tsc index.ts && node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^16.3.1"
+  },
+  "dependencies": {
+    "typescript": "^4.3.5"
+  }
+}
