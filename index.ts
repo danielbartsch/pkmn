@@ -169,12 +169,19 @@ process.stdin.on("data", async function (key: string) {
       case KEYS.enter: {
         const menuEntry = currentMenu[lastSelected]
         if (Array.isArray(menuEntry)) {
-          gameState.selected.push(0)
+          const isSameAsLast = gameState.selected.every(
+            (selectedMenuIndex, index) =>
+              selectedMenuIndex === gameState.lastSelected[index]
+          )
+          gameState.selected.push(
+            isSameAsLast ? gameState.lastSelected[gameState.selected.length] : 0
+          )
         } else {
           switch (menuEntry.type) {
             case "action": {
+              gameState.lastSelected = gameState.selected
               gameState.ownTurn = false
-              gameState.selected = [0]
+              gameState.selected = [gameState.lastSelected[0]]
               if (menuEntry.key === "flee") {
                 if (Math.random() < menuEntry.chanceToSucceed) {
                   await animateText("You fled!")

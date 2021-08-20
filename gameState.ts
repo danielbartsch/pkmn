@@ -13,6 +13,7 @@ type GameState = {
   me: Player
   ownTurn: boolean
   selected: Array<number>
+  lastSelected: Array<number>
   textAnimation: {
     startedAt: number | null
     text: string
@@ -43,6 +44,7 @@ export const gameState: GameState = {
   },
   ownTurn: true,
   selected: [0],
+  lastSelected: [],
   textAnimation: {
     startedAt: null,
     text: "",
