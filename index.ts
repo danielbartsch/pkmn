@@ -1,61 +1,7 @@
 import * as textFormat from "./textFormat"
 import { Menu, renderMenu, selectMenu, menu, Attack, attacks } from "./menu"
 import { renderLifeBar } from "./lifeBar"
-
-type Player = {
-  life: number
-  lifeMax: number
-  lifeBarAnimation: {
-    startedAt: number | null
-    from: number | null
-    duration: number
-  }
-}
-
-type GameState = {
-  enemy: Player
-  me: Player
-  ownTurn: boolean
-  selected: Array<number>
-  textAnimation: {
-    startedAt: number | null
-    text: string
-    textSpeed: number
-    textColor: "white" | "green" | "black" | "yellow"
-  }
-  log: Array<any>
-}
-
-const gameState: GameState = {
-  enemy: {
-    life: 100,
-    lifeMax: 100,
-    lifeBarAnimation: {
-      startedAt: null,
-      from: null,
-      duration: 1000,
-    },
-  },
-  me: {
-    life: 100,
-    lifeMax: 100,
-    lifeBarAnimation: {
-      startedAt: null,
-      from: null,
-      duration: 1000,
-    },
-  },
-  ownTurn: true,
-  selected: [0],
-  textAnimation: {
-    startedAt: null,
-    text: "",
-    textSpeed: 50, // one character every <this value> milliseconds
-    textColor: "white",
-  },
-
-  log: [],
-}
+import { gameState, Player } from "./gameState"
 
 const { columns: width, rows: height } = process.stdout
 const clear = ({ width, height, char = " " }) => {
@@ -150,12 +96,12 @@ const run = async () => {
 run()
 
 const USER_READING_THRESHOLD = 400
-const getTextRenderTime = (textAnimation: GameState["textAnimation"]) =>
+const getTextRenderTime = (textAnimation: typeof gameState["textAnimation"]) =>
   textAnimation.text.length * textAnimation.textSpeed + USER_READING_THRESHOLD
 
 const animateText = async (
-  text: GameState["textAnimation"]["text"],
-  options: Partial<Omit<GameState["textAnimation"], "text">> = {}
+  text: typeof gameState["textAnimation"]["text"],
+  options: Partial<Omit<typeof gameState["textAnimation"], "text">> = {}
 ) => {
   options.startedAt = options.startedAt ?? Date.now()
   gameState.textAnimation = { ...gameState.textAnimation, text, ...options }
@@ -171,11 +117,7 @@ const animateText = async (
 const variancePercent = (variance = 0.1) =>
   Math.random() * variance + (1 - variance / 2)
 
-const attack = async (
-  menuEntry: Attack,
-  gameState: GameState,
-  target: "enemy" | "me"
-) => {
+const attack = async (menuEntry: Attack, target: "enemy" | "me") => {
   await animateText(
     (target === "enemy" ? "You use " : "Enemy uses ") + menuEntry.label + "."
   )
@@ -257,7 +199,7 @@ process.stdin.on("data", async function (key: string) {
                   await animateText("Couldn't flee.")
                 }
               } else {
-                await attack(menuEntry, gameState, "enemy")
+                await attack(menuEntry, "enemy")
               }
 
               if (gameState.enemy.life <= 0) {
@@ -271,7 +213,6 @@ process.stdin.on("data", async function (key: string) {
 
               await attack(
                 attacks[Math.floor(Math.random() * attacks.length)],
-                gameState,
                 "me"
               )
 
