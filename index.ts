@@ -98,7 +98,7 @@ const run = async () => {
 run()
 
 // variance = 0.1 --> returns between 0.95 and 1.05
-const variancePercent = (variance = 0.1) =>
+const variancePercent = (variance = 0.2) =>
   Math.random() * variance + (1 - variance / 2)
 
 const attack = async (menuEntry: Attack, target: "enemy" | "me") => {
