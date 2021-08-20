@@ -2,6 +2,8 @@ import * as textFormat from "./textFormat"
 import { Menu, renderMenu, selectMenu, menu, Attack, attacks } from "./menu"
 import { renderLifeBar } from "./lifeBar"
 import { gameState, Player } from "./gameState"
+import { sleep } from "./util"
+import { animateText } from "./animateText"
 
 const { columns: width, rows: height } = process.stdout
 const clear = ({ width, height, char = " " }) => {
@@ -94,24 +96,6 @@ const run = async () => {
 }
 
 run()
-
-const USER_READING_THRESHOLD = 400
-const getTextRenderTime = (textAnimation: typeof gameState["textAnimation"]) =>
-  textAnimation.text.length * textAnimation.textSpeed + USER_READING_THRESHOLD
-
-const animateText = async (
-  text: typeof gameState["textAnimation"]["text"],
-  options: Partial<Omit<typeof gameState["textAnimation"], "text">> = {}
-) => {
-  options.startedAt = options.startedAt ?? Date.now()
-  gameState.textAnimation = { ...gameState.textAnimation, text, ...options }
-  await sleep(getTextRenderTime(gameState.textAnimation))
-  gameState.textAnimation = {
-    ...gameState.textAnimation,
-    startedAt: null,
-    text: "",
-  }
-}
 
 // variance = 0.1 --> returns between 0.95 and 1.05
 const variancePercent = (variance = 0.1) =>
@@ -279,8 +263,4 @@ const KEYS = {
   enter: "\r",
   escape: "\u001b",
   ctrlC: "\u0003",
-}
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
 }
