@@ -1,7 +1,7 @@
 import * as textFormat from "./textFormat"
 import { Menu, renderMenu, selectMenu, menu, Attack, attacks } from "./menu"
 import { renderLifeBar } from "./lifeBar"
-import { gameState, Player } from "./gameState"
+import { gameState, Player, Status } from "./gameState"
 import { sleep } from "./util"
 import { animateText } from "./animateText"
 
@@ -39,13 +39,50 @@ const getInterpolatedLife = (
   return value <= 0 ? 0 : value
 }
 
+const sumStatusEffects = (
+  statusEffects: Array<Status>,
+  changeToSum: Status["change"]
+): -3 | -2 | -1 | 0 | 1 | 2 | 3 => {
+  const sum = statusEffects.reduce(
+    (acc, { severity, change }) =>
+      acc + (change === changeToSum ? severity : 0),
+    0
+  )
+  return Math.abs(sum) > 3 ? (Math.max(-3, Math.min(3, sum)) as any) : sum
+}
+
+const renderName = (
+  name: string,
+  statusEffects: Array<Status>,
+  exactLife?: string
+) => {
+  const statusEffectsAttack = sumStatusEffects(statusEffects, "attack")
+  const statusEffectsDefense = sumStatusEffects(statusEffects, "defense")
+  process.stdout.write(
+    `${name}${exactLife ? " " + exactLife : ""}${[
+      statusEffectsAttack === 0
+        ? null
+        : " atk" +
+          (statusEffectsAttack > 0
+            ? "+" + statusEffectsAttack
+            : statusEffectsAttack),
+      statusEffectsDefense === 0
+        ? null
+        : " def" +
+          (statusEffectsDefense > 0
+            ? "+" + statusEffectsDefense
+            : statusEffectsDefense),
+    ].join(" ")}\n`
+  )
+}
+
 const WIDTH = 30
 const HEIGHT = 11
 const render = (menu: Array<Menu>, selected: number) => {
   clear({ width: WIDTH, height: HEIGHT })
   process.stdout.cursorTo(0, 0)
 
-  process.stdout.write("Enemy\n")
+  renderName("Enemy", gameState.enemy.statusEffects)
   renderLifeBar({
     width: WIDTH,
     current: getInterpolatedLife(
@@ -59,8 +96,12 @@ const render = (menu: Array<Menu>, selected: number) => {
     gameState.me.life,
     gameState.me.lifeBarAnimation
   )
-  process.stdout.write(
-    `\nYou (${meLifeInterpolated}/${gameState.me.lifeMax})\n`
+
+  process.stdout.write("\n")
+  renderName(
+    "You",
+    gameState.me.statusEffects,
+    `(${meLifeInterpolated}/${gameState.me.lifeMax})`
   )
   renderLifeBar({
     width: WIDTH,
@@ -97,6 +138,19 @@ const run = async () => {
 
 run()
 
+const statusEffectAttackMultipliers: Record<
+  -3 | -2 | -1 | 0 | 1 | 2 | 3,
+  number
+> = {
+  "-3": 0.571428,
+  "-2": 0.666666,
+  "-1": 0.8,
+  "0": 1,
+  "1": 1.25,
+  "2": 1.5,
+  "3": 1.75,
+}
+
 // variance = 0.1 --> returns between 0.95 and 1.05
 const variancePercent = (variance = 0.2) =>
   Math.random() * variance + (1 - variance / 2)
@@ -111,13 +165,37 @@ const attack = async (menuEntry: Attack, target: "enemy" | "me") => {
 
     gameState[target].lifeBarAnimation.from = gameState[target].life
     gameState[target].lifeBarAnimation.startedAt = Date.now()
+
+    const actor = target === "enemy" ? "me" : "enemy"
+
+    const targetStatusEffects =
+      statusEffectAttackMultipliers[
+        sumStatusEffects(gameState[target].statusEffects, "defense")
+      ]
+    const actorStatusEffects =
+      statusEffectAttackMultipliers[
+        sumStatusEffects(gameState[actor].statusEffects, "attack")
+      ]
+
     gameState[target].life -= Math.round(
-      (isCritical ? 2 : 1) * menuEntry.damage * variancePercent()
+      (isCritical ? 2 : 1) *
+        menuEntry.damage *
+        targetStatusEffects *
+        actorStatusEffects *
+        variancePercent()
     )
 
     if (gameState[target].life <= 0) {
       gameState[target].life = 0
     }
+
+    menuEntry.statusEffects?.forEach(
+      ({ change, severity, target: statusEffectTarget }) => {
+        gameState[
+          statusEffectTarget === "enemy" ? target : actor
+        ].statusEffects.push({ change, severity })
+      }
+    )
 
     if (menuEntry.damage !== 0) {
       await sleep(gameState[target].lifeBarAnimation.duration)

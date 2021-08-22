@@ -1,3 +1,8 @@
+export type Status = {
+  change: "attack" | "defense"
+  severity: number
+}
+
 export type Player = {
   life: number
   lifeMax: number
@@ -6,6 +11,7 @@ export type Player = {
     from: number | null
     duration: number
   }
+  statusEffects: Array<Status>
 }
 
 type GameState = {
@@ -32,6 +38,7 @@ export const gameState: GameState = {
       from: null,
       duration: 1000,
     },
+    statusEffects: [],
   },
   me: {
     life: 100,
@@ -41,6 +48,7 @@ export const gameState: GameState = {
       from: null,
       duration: 1000,
     },
+    statusEffects: [],
   },
   ownTurn: true,
   selected: [0],

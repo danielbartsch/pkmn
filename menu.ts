@@ -1,3 +1,4 @@
+import { Status } from "./gameState"
 import * as textFormat from "./textFormat"
 
 export type Attack = {
@@ -7,6 +8,7 @@ export type Attack = {
   damage: number
   chanceToSucceed: number
   chanceToCritical: number
+  statusEffects?: Array<Status & { target: "me" | "enemy" }>
 }
 
 type MenuElement = {
@@ -31,14 +33,16 @@ export const attacks: Array<Attack> = [
     damage: 0,
     chanceToSucceed: 1,
     chanceToCritical: 0,
+    statusEffects: [{ target: "me", change: "defense", severity: 1 }],
   },
   {
-    label: "Miss",
-    key: "miss",
+    label: "Growl",
+    key: "growl",
     type: "action",
     damage: 0,
-    chanceToSucceed: 0,
+    chanceToSucceed: 1,
     chanceToCritical: 0,
+    statusEffects: [{ target: "enemy", change: "attack", severity: -1 }],
   },
   {
     label: "Crit",
