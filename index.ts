@@ -161,29 +161,23 @@ const statusEffectAttackMultipliers: Record<
 const variancePercent = (variance = 0.2) =>
   Math.random() * variance + (1 - variance / 2)
 
-const attack = async (menuEntry: Attack, target: "enemy" | "me") => {
-  await animateText(
-    (target === "enemy" ? "You use " : "Enemy uses ") + menuEntry.label + "."
-  )
-
+const attack = async (menuEntry: Attack, actor: Player, target: Player) => {
   if (Math.random() < menuEntry.chanceToSucceed) {
     const isCritical = Math.random() < menuEntry.chanceToCritical
 
-    gameState[target].lifeBarAnimation.from = gameState[target].life
-    gameState[target].lifeBarAnimation.startedAt = Date.now()
-
-    const actor = target === "enemy" ? "me" : "enemy"
+    target.lifeBarAnimation.from = target.life
+    target.lifeBarAnimation.startedAt = Date.now()
 
     const targetStatusEffects =
       statusEffectAttackMultipliers[
-        sumStatusEffects(gameState[target].statusEffects, "defense")
+        sumStatusEffects(target.statusEffects, "defense")
       ]
     const actorStatusEffects =
       statusEffectAttackMultipliers[
-        sumStatusEffects(gameState[actor].statusEffects, "attack")
+        sumStatusEffects(actor.statusEffects, "attack")
       ]
 
-    gameState[target].life -= Math.round(
+    target.life -= Math.round(
       (isCritical ? 2 : 1) *
         menuEntry.damage *
         targetStatusEffects *
@@ -191,20 +185,22 @@ const attack = async (menuEntry: Attack, target: "enemy" | "me") => {
         variancePercent()
     )
 
-    if (gameState[target].life <= 0) {
-      gameState[target].life = 0
+    if (target.life <= 0) {
+      target.life = 0
     }
 
     menuEntry.statusEffects?.forEach(
       ({ change, severity, target: statusEffectTarget }) => {
-        gameState[
-          statusEffectTarget === "enemy" ? target : actor
-        ].statusEffects.push({ change, severity })
+        const player = statusEffectTarget === "enemy" ? target : actor
+        player.statusEffects.push({
+          change,
+          severity,
+        })
       }
     )
 
     if (menuEntry.damage !== 0) {
-      await sleep(gameState[target].lifeBarAnimation.duration)
+      await sleep(target.lifeBarAnimation.duration)
     }
     if (isCritical) {
       await animateText("Critical hit!")
@@ -274,7 +270,8 @@ process.stdin.on("data", async function (key: string) {
                   await animateText("Couldn't flee.")
                 }
               } else {
-                await attack(menuEntry, "enemy")
+                await animateText("You use " + menuEntry.label + ".")
+                await attack(menuEntry, gameState.me, gameState.enemy)
               }
 
               if (gameState.enemy.life <= 0) {
@@ -286,10 +283,10 @@ process.stdin.on("data", async function (key: string) {
                 process.exit(0)
               }
 
-              await attack(
-                attacks[Math.floor(Math.random() * attacks.length)],
-                "me"
-              )
+              const enemyMenuEntry =
+                attacks[Math.floor(Math.random() * attacks.length)]
+              await animateText("Enemy uses " + enemyMenuEntry.label + ".")
+              await attack(enemyMenuEntry, gameState.enemy, gameState.me)
 
               if (gameState.me.life <= 0) {
                 await animateText(
