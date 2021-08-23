@@ -42,13 +42,13 @@ const getInterpolatedLife = (
 const sumStatusEffects = (
   statusEffects: Array<Status>,
   changeToSum: Status["change"]
-): -3 | -2 | -1 | 0 | 1 | 2 | 3 => {
+): -6 | -5 | -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 => {
   const sum = statusEffects.reduce(
     (acc, { severity, change }) =>
       acc + (change === changeToSum ? severity : 0),
     0
   )
-  return Math.abs(sum) > 3 ? (Math.max(-3, Math.min(3, sum)) as any) : sum
+  return Math.abs(sum) > 6 ? (Math.max(-6, Math.min(6, sum)) as any) : sum
 }
 
 const renderName = (
@@ -139,16 +139,22 @@ const run = async () => {
 run()
 
 const statusEffectAttackMultipliers: Record<
-  -3 | -2 | -1 | 0 | 1 | 2 | 3,
+  -6 | -5 | -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6,
   number
 > = {
-  "-3": 0.571428,
-  "-2": 0.666666,
-  "-1": 0.8,
+  "-6": 1 / 2.5,
+  "-5": 1 / 2.25,
+  "-4": 1 / 2,
+  "-3": 1 / 1.75,
+  "-2": 1 / 1.5,
+  "-1": 1 / 1.25,
   "0": 1,
   "1": 1.25,
   "2": 1.5,
   "3": 1.75,
+  "4": 2,
+  "5": 2.25,
+  "6": 2.5,
 }
 
 // variance = 0.1 --> returns between 0.95 and 1.05
