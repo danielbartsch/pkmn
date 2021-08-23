@@ -19,12 +19,14 @@ export const renderLifeBar = ({
       : textFormat.green
 
   process.stdout.write(
-    format(
-      "█".repeat(Math.floor(lifeRemainingRelative)) +
-        getFractionLifeBar(
-          Math.ceil(lifeRemainingRelative) - lifeRemainingRelative
-        )
-    ) + "\n"
+    (current === 0
+      ? textFormat.bgRed(textFormat.black(textFormat.bold(" D E F E A T E D ")))
+      : format(
+          "█".repeat(Math.floor(lifeRemainingRelative)) +
+            getFractionLifeBar(
+              Math.ceil(lifeRemainingRelative) - lifeRemainingRelative
+            )
+        )) + "\n"
   )
 }
 
