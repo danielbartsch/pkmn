@@ -51,28 +51,24 @@ const sumStatusEffects = (
   return Math.abs(sum) > 6 ? (Math.max(-6, Math.min(6, sum)) as any) : sum
 }
 
+const renderStatusEffect = (name: string, severity: number) =>
+  severity === 0 ? "" : name + (severity > 0 ? "+" + severity : severity)
+
 const renderName = (
   name: string,
   statusEffects: Array<Status>,
   exactLife?: string
 ) => {
-  const statusEffectsAttack = sumStatusEffects(statusEffects, "attack")
-  const statusEffectsDefense = sumStatusEffects(statusEffects, "defense")
   process.stdout.write(
-    `${name}${exactLife ? " " + exactLife : ""}${[
-      statusEffectsAttack === 0
-        ? null
-        : " atk" +
-          (statusEffectsAttack > 0
-            ? "+" + statusEffectsAttack
-            : statusEffectsAttack),
-      statusEffectsDefense === 0
-        ? null
-        : " def" +
-          (statusEffectsDefense > 0
-            ? "+" + statusEffectsDefense
-            : statusEffectsDefense),
-    ].join(" ")}\n`
+    [
+      name,
+      exactLife,
+      renderStatusEffect("atk", sumStatusEffects(statusEffects, "attack")),
+      renderStatusEffect("def", sumStatusEffects(statusEffects, "defense")),
+      renderStatusEffect("spd", sumStatusEffects(statusEffects, "speed")),
+    ]
+      .filter((element) => element)
+      .join(" ") + "\n"
   )
 }
 
@@ -262,39 +258,66 @@ process.stdin.on("data", async function (key: string) {
               gameState.lastSelected = gameState.selected
               gameState.ownTurn = false
               gameState.selected = [gameState.lastSelected[0]]
-              if (menuEntry.key === "flee") {
-                if (Math.random() < menuEntry.chanceToSucceed) {
-                  await animateText("You fled!")
-                  process.exit(0)
-                } else {
-                  await animateText("Couldn't flee.")
-                }
-              } else {
-                await animateText("You use " + menuEntry.label + ".")
-                await attack(menuEntry, gameState.me, gameState.enemy)
+
+              const actions = {
+                meAction: async () => {
+                  if (menuEntry.key === "flee") {
+                    if (Math.random() < menuEntry.chanceToSucceed) {
+                      await animateText("You fled!")
+                      process.exit(0)
+                    } else {
+                      await animateText("Couldn't flee.")
+                    }
+                  } else {
+                    await animateText("You use " + menuEntry.label + ".")
+                    await attack(menuEntry, gameState.me, gameState.enemy)
+                  }
+
+                  if (gameState.enemy.life <= 0) {
+                    gameState.ownTurn = false
+                    await animateText(
+                      "Enemy cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
+                        textFormat.green("You won!")
+                    )
+                    process.exit(0)
+                  }
+                },
+                enemyAction: async () => {
+                  const enemyMenuEntry =
+                    attacks[Math.floor(Math.random() * attacks.length)]
+                  await animateText("Enemy uses " + enemyMenuEntry.label + ".")
+                  await attack(enemyMenuEntry, gameState.enemy, gameState.me)
+
+                  if (gameState.me.life <= 0) {
+                    await animateText(
+                      "You cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
+                        textFormat.red("You lost!")
+                    )
+                    process.exit(0)
+                  }
+                },
               }
 
-              if (gameState.enemy.life <= 0) {
-                gameState.ownTurn = false
-                await animateText(
-                  "Enemy cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
-                    textFormat.green("You won!")
-                )
-                process.exit(0)
-              }
+              const meSpeed = sumStatusEffects(
+                gameState.me.statusEffects,
+                "speed"
+              )
+              const enemySpeed = sumStatusEffects(
+                gameState.enemy.statusEffects,
+                "speed"
+              )
+              const actionOrder =
+                meSpeed > enemySpeed
+                  ? ["meAction", "enemyAction"]
+                  : meSpeed < enemySpeed
+                  ? ["enemyAction", "meAction"]
+                  : Math.random() < 0.5
+                  ? ["meAction", "enemyAction"]
+                  : ["enemyAction", "meAction"]
 
-              const enemyMenuEntry =
-                attacks[Math.floor(Math.random() * attacks.length)]
-              await animateText("Enemy uses " + enemyMenuEntry.label + ".")
-              await attack(enemyMenuEntry, gameState.enemy, gameState.me)
+              await actions[actionOrder[0]]()
+              await actions[actionOrder[1]]()
 
-              if (gameState.me.life <= 0) {
-                await animateText(
-                  "You cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
-                    textFormat.red("You lost!")
-                )
-                process.exit(0)
-              }
               gameState.ownTurn = true
 
               break

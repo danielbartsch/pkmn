@@ -1,5 +1,5 @@
 export type Status = {
-  change: "attack" | "defense"
+  change: "attack" | "defense" | "speed"
   severity: number
 }
 

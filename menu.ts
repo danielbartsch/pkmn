@@ -35,7 +35,7 @@ export const attacks: Array<Attack> = [
     chanceToCritical: 0,
     statusEffects: [{ target: "me", change: "defense", severity: 1 }],
   },
-  {
+  /*{
     label: "Growl",
     key: "growl",
     type: "action",
@@ -43,6 +43,15 @@ export const attacks: Array<Attack> = [
     chanceToSucceed: 1,
     chanceToCritical: 0,
     statusEffects: [{ target: "enemy", change: "attack", severity: -1 }],
+  },*/
+  {
+    label: "Dragon Dance",
+    key: "dragondance",
+    type: "action",
+    damage: 0,
+    chanceToSucceed: 1,
+    chanceToCritical: 0,
+    statusEffects: [{ target: "me", change: "speed", severity: 1 }],
   },
   {
     label: "Crit",
