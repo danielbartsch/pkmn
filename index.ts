@@ -3,7 +3,7 @@ import { Menu, renderMenu, selectMenu, menu, Attack, attacks } from "./menu"
 import { renderLifeBar } from "./lifeBar"
 import { gameState, Player, Status } from "./gameState"
 import { sleep } from "./util"
-import { animateText } from "./animateText"
+import { round, sumStatusEffects } from "./round"
 
 const { columns: width, rows: height } = process.stdout
 const clear = ({ width, height, char = " " }) => {
@@ -37,18 +37,6 @@ const getInterpolatedLife = (
       : targetLife
   )
   return value <= 0 ? 0 : value
-}
-
-const sumStatusEffects = (
-  statusEffects: Array<Status>,
-  changeToSum: Status["change"]
-): -6 | -5 | -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 => {
-  const sum = statusEffects.reduce(
-    (acc, { severity, change }) =>
-      acc + (change === changeToSum ? severity : 0),
-    0
-  )
-  return Math.abs(sum) > 6 ? (Math.max(-6, Math.min(6, sum)) as any) : sum
 }
 
 const renderStatusEffect = (name: string, severity: number) =>
@@ -134,78 +122,6 @@ const run = async () => {
 
 run()
 
-const statusEffectAttackMultipliers: Record<
-  -6 | -5 | -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6,
-  number
-> = {
-  "-6": 1 / 2.5,
-  "-5": 1 / 2.25,
-  "-4": 1 / 2,
-  "-3": 1 / 1.75,
-  "-2": 1 / 1.5,
-  "-1": 1 / 1.25,
-  "0": 1,
-  "1": 1.25,
-  "2": 1.5,
-  "3": 1.75,
-  "4": 2,
-  "5": 2.25,
-  "6": 2.5,
-}
-
-// variance = 0.1 --> returns between 0.95 and 1.05
-const variancePercent = (variance = 0.2) =>
-  Math.random() * variance + (1 - variance / 2)
-
-const attack = async (menuEntry: Attack, actor: Player, target: Player) => {
-  if (Math.random() < menuEntry.chanceToSucceed) {
-    const isCritical = Math.random() < menuEntry.chanceToCritical
-
-    target.lifeBarAnimation.from = target.life
-    target.lifeBarAnimation.startedAt = Date.now()
-
-    const targetStatusEffects =
-      statusEffectAttackMultipliers[
-        sumStatusEffects(target.statusEffects, "defense")
-      ]
-    const actorStatusEffects =
-      statusEffectAttackMultipliers[
-        sumStatusEffects(actor.statusEffects, "attack")
-      ]
-
-    target.life -= Math.round(
-      (isCritical ? 2 : 1) *
-        menuEntry.damage *
-        targetStatusEffects *
-        actorStatusEffects *
-        variancePercent()
-    )
-
-    if (target.life <= 0) {
-      target.life = 0
-    }
-
-    menuEntry.statusEffects?.forEach(
-      ({ change, severity, target: statusEffectTarget }) => {
-        const player = statusEffectTarget === "enemy" ? target : actor
-        player.statusEffects.push({
-          change,
-          severity,
-        })
-      }
-    )
-
-    if (menuEntry.damage !== 0) {
-      await sleep(target.lifeBarAnimation.duration)
-    }
-    if (isCritical) {
-      await animateText("Critical hit!")
-    }
-  } else {
-    await animateText(menuEntry.label + " missed!")
-  }
-}
-
 function log(...strings) {
   gameState.log = [...strings]
 }
@@ -255,71 +171,7 @@ process.stdin.on("data", async function (key: string) {
         } else {
           switch (menuEntry.type) {
             case "action": {
-              gameState.lastSelected = gameState.selected
-              gameState.ownTurn = false
-              gameState.selected = [gameState.lastSelected[0]]
-
-              const actions = {
-                meAction: async () => {
-                  if (menuEntry.key === "flee") {
-                    if (Math.random() < menuEntry.chanceToSucceed) {
-                      await animateText("You fled!")
-                      process.exit(0)
-                    } else {
-                      await animateText("Couldn't flee.")
-                    }
-                  } else {
-                    await animateText("You use " + menuEntry.label + ".")
-                    await attack(menuEntry, gameState.me, gameState.enemy)
-                  }
-
-                  if (gameState.enemy.life <= 0) {
-                    gameState.ownTurn = false
-                    await animateText(
-                      "Enemy cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
-                        textFormat.green("You won!")
-                    )
-                    process.exit(0)
-                  }
-                },
-                enemyAction: async () => {
-                  const enemyMenuEntry =
-                    attacks[Math.floor(Math.random() * attacks.length)]
-                  await animateText("Enemy uses " + enemyMenuEntry.label + ".")
-                  await attack(enemyMenuEntry, gameState.enemy, gameState.me)
-
-                  if (gameState.me.life <= 0) {
-                    await animateText(
-                      "You cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
-                        textFormat.red("You lost!")
-                    )
-                    process.exit(0)
-                  }
-                },
-              }
-
-              const meSpeed = sumStatusEffects(
-                gameState.me.statusEffects,
-                "speed"
-              )
-              const enemySpeed = sumStatusEffects(
-                gameState.enemy.statusEffects,
-                "speed"
-              )
-              const actionOrder =
-                meSpeed > enemySpeed
-                  ? ["meAction", "enemyAction"]
-                  : meSpeed < enemySpeed
-                  ? ["enemyAction", "meAction"]
-                  : Math.random() < 0.5
-                  ? ["meAction", "enemyAction"]
-                  : ["enemyAction", "meAction"]
-
-              await actions[actionOrder[0]]()
-              await actions[actionOrder[1]]()
-
-              gameState.ownTurn = true
-
+              await round(menuEntry)
               break
             }
 
