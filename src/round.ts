@@ -43,7 +43,7 @@ const attack = async (menuEntry: Attack, actor: Player, target: Player) => {
   if (Math.random() < menuEntry.chanceToSucceed) {
     const isCritical = Math.random() < menuEntry.chanceToCritical
 
-    target.lifeBarAnimation.from = target.life
+    target.lifeBarAnimation.from = target.currentStats.life
     target.lifeBarAnimation.startedAt = Date.now()
 
     const targetStatusEffects =
@@ -55,7 +55,7 @@ const attack = async (menuEntry: Attack, actor: Player, target: Player) => {
         sumStatusEffects(actor.statusEffects, "attack")
       ]
 
-    target.life -= Math.round(
+    target.currentStats.life -= Math.round(
       (isCritical ? 2 : 1) *
         menuEntry.damage *
         targetStatusEffects *
@@ -63,8 +63,8 @@ const attack = async (menuEntry: Attack, actor: Player, target: Player) => {
         variancePercent()
     )
 
-    if (target.life <= 0) {
-      target.life = 0
+    if (target.currentStats.life <= 0) {
+      target.currentStats.life = 0
     }
 
     menuEntry.statusEffects?.forEach(
@@ -107,7 +107,7 @@ export const round = async (menuEntry: Attack) => {
         await attack(menuEntry, gameState.me, gameState.enemy)
       }
 
-      if (gameState.enemy.life <= 0) {
+      if (gameState.enemy.currentStats.life <= 0) {
         gameState.ownTurn = false
         await animateText(
           "Enemy cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
@@ -121,7 +121,7 @@ export const round = async (menuEntry: Attack) => {
       await animateText("Enemy uses " + enemyMenuEntry.label + ".")
       await attack(enemyMenuEntry, gameState.enemy, gameState.me)
 
-      if (gameState.me.life <= 0) {
+      if (gameState.me.currentStats.life <= 0) {
         await animateText(
           "You cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
             textFormat.red("You lost!")

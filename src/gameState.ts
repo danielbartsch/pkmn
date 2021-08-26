@@ -3,20 +3,24 @@ export type Status = {
   severity: number
 }
 
-export type Player = {
+type Stats = {
+  // values 0 to 10
   life: number
+  attack: number
+  defense: number
+  speed: number
+}
+
+export type Player = {
+  level: number
+  currentStats: Stats
+  baseStats: Stats
+  statusEffects: Array<Status>
   lifeBarAnimation: {
     startedAt: number | null
     from: number | null
     duration: number
   }
-  baseStats: {
-    life: number
-    attack: number
-    defense: number
-    speed: number
-  }
-  statusEffects: Array<Status>
 }
 
 type GameState = {
@@ -34,11 +38,24 @@ type GameState = {
   log: Array<any>
 }
 
+export const getStats = (player: Player): Stats => ({
+  life: player.level * player.baseStats.life,
+  attack: player.level * player.baseStats.attack,
+  defense: player.level * player.baseStats.defense,
+  speed: player.level * player.baseStats.speed,
+})
+
 export const gameState: GameState = {
   enemy: {
-    life: 20,
+    level: 5,
+    currentStats: {
+      life: 0,
+      attack: 0,
+      defense: 0,
+      speed: 0,
+    },
     baseStats: {
-      life: 20,
+      life: 3,
       attack: 5,
       defense: 3,
       speed: 2,
@@ -51,9 +68,15 @@ export const gameState: GameState = {
     },
   },
   me: {
-    life: 20,
+    level: 5,
+    currentStats: {
+      life: 0,
+      attack: 0,
+      defense: 0,
+      speed: 0,
+    },
     baseStats: {
-      life: 20,
+      life: 3,
       attack: 3,
       defense: 5,
       speed: 2,

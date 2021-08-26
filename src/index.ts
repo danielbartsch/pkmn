@@ -1,7 +1,7 @@
 import * as textFormat from "./textFormat"
 import { Menu, renderMenu, selectMenu, menu } from "./menu"
 import { renderLifeBar } from "./lifeBar"
-import { gameState, Player, Status } from "./gameState"
+import { gameState, getStats, Player } from "./gameState"
 import { sleep } from "./util"
 import { round, sumStatusEffects } from "./round"
 
@@ -77,14 +77,14 @@ const render = (menu: Array<Menu>, selected: number) => {
   renderLifeBar({
     width: WIDTH,
     current: getInterpolatedLife(
-      gameState.enemy.life,
+      gameState.enemy.currentStats.life,
       gameState.enemy.lifeBarAnimation
     ),
-    max: gameState.enemy.baseStats.life,
+    max: getStats(gameState.enemy).life,
   })
 
   const meLifeInterpolated = getInterpolatedLife(
-    gameState.me.life,
+    gameState.me.currentStats.life,
     gameState.me.lifeBarAnimation
   )
 
@@ -97,7 +97,7 @@ const render = (menu: Array<Menu>, selected: number) => {
   renderLifeBar({
     width: WIDTH,
     current: meLifeInterpolated,
-    max: gameState.me.baseStats.life,
+    max: getStats(gameState.me).life,
   })
   process.stdout.write("\n")
 
@@ -120,6 +120,8 @@ const render = (menu: Array<Menu>, selected: number) => {
 const run = async () => {
   clear({ width, height })
   clear({ width: WIDTH + 1, height: HEIGHT + 1, char: "█" })
+  gameState.enemy.currentStats = getStats(gameState.enemy)
+  gameState.me.currentStats = getStats(gameState.me)
   while (true) {
     render(
       selectMenu(menu, gameState.selected),
