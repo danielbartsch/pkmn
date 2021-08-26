@@ -54,12 +54,14 @@ const attack = async (menuEntry: Attack, actor: Player, target: Player) => {
       statusEffectAttackMultipliers[
         sumStatusEffects(actor.statusEffects, "attack")
       ]
+    const defenseAttackRelation =
+      (actor.currentStats.attack * actorStatusEffects) /
+      (target.currentStats.defense * targetStatusEffects)
 
     target.currentStats.life -= Math.round(
       (isCritical ? 2 : 1) *
         menuEntry.damage *
-        targetStatusEffects *
-        actorStatusEffects *
+        defenseAttackRelation *
         variancePercent()
     )
 
