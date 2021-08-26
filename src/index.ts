@@ -80,7 +80,7 @@ const render = (menu: Array<Menu>, selected: number) => {
       gameState.enemy.life,
       gameState.enemy.lifeBarAnimation
     ),
-    max: gameState.enemy.lifeMax,
+    max: gameState.enemy.baseStats.life,
   })
 
   const meLifeInterpolated = getInterpolatedLife(
@@ -97,7 +97,7 @@ const render = (menu: Array<Menu>, selected: number) => {
   renderLifeBar({
     width: WIDTH,
     current: meLifeInterpolated,
-    max: gameState.me.lifeMax,
+    max: gameState.me.baseStats.life,
   })
   process.stdout.write("\n")
 

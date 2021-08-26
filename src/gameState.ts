@@ -5,11 +5,16 @@ export type Status = {
 
 export type Player = {
   life: number
-  lifeMax: number
   lifeBarAnimation: {
     startedAt: number | null
     from: number | null
     duration: number
+  }
+  baseStats: {
+    life: number
+    attack: number
+    defense: number
+    speed: number
   }
   statusEffects: Array<Status>
 }
@@ -31,24 +36,34 @@ type GameState = {
 
 export const gameState: GameState = {
   enemy: {
-    life: 100,
-    lifeMax: 100,
+    life: 20,
+    baseStats: {
+      life: 20,
+      attack: 5,
+      defense: 3,
+      speed: 2,
+    },
+    statusEffects: [],
     lifeBarAnimation: {
       startedAt: null,
       from: null,
       duration: 1000,
     },
-    statusEffects: [],
   },
   me: {
-    life: 100,
-    lifeMax: 100,
+    life: 20,
+    baseStats: {
+      life: 20,
+      attack: 3,
+      defense: 5,
+      speed: 2,
+    },
+    statusEffects: [],
     lifeBarAnimation: {
       startedAt: null,
       from: null,
       duration: 1000,
     },
-    statusEffects: [],
   },
   ownTurn: true,
   selected: [0],
