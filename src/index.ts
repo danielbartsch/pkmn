@@ -6,7 +6,15 @@ import { sleep } from "./util"
 import { round, sumStatusEffects } from "./round"
 
 const { columns: width, rows: height } = process.stdout
-const clear = ({ width, height, char = " " }) => {
+const clear = ({
+  width,
+  height,
+  char = " ",
+}: {
+  width: number
+  height: number
+  char?: string
+}) => {
   process.stdout.cursorTo(0, 0)
   process.stdout.write((char.repeat(width) + "\n").repeat(height - 1))
 }
@@ -122,7 +130,7 @@ const run = async () => {
 
 run()
 
-function log(...strings) {
+function log(...strings: Array<string>) {
   gameState.log = [...strings]
 }
 

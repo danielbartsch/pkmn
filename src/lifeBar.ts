@@ -30,7 +30,7 @@ export const renderLifeBar = ({
   )
 }
 
-const getFractionLifeBar = (fraction) => {
+const getFractionLifeBar = (fraction: number) => {
   if (fraction === 0) return ""
   if (fraction < 0.125) return "█"
   if (fraction < 0.25) return "▉"
