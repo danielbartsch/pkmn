@@ -49,18 +49,29 @@ const getInterpolatedLife = (
 const renderStatusEffect = (name: string, severity: number) =>
   severity === 0 ? "" : name + (severity > 0 ? "+" + severity : severity)
 
-const renderName = (
+const renderNameBar = (
   name: string,
-  statusEffects: Array<Status>,
+  player: Player,
+  me: boolean,
   exactLife?: string
 ) => {
   process.stdout.write(
     [
+      "L[" + player.level + "]",
       name,
-      exactLife,
-      renderStatusEffect("atk", sumStatusEffects(statusEffects, "attack")),
-      renderStatusEffect("def", sumStatusEffects(statusEffects, "defense")),
-      renderStatusEffect("spd", sumStatusEffects(statusEffects, "speed")),
+      me ? exactLife : "",
+      renderStatusEffect(
+        "atk",
+        sumStatusEffects(player.statusEffects, "attack")
+      ),
+      renderStatusEffect(
+        "def",
+        sumStatusEffects(player.statusEffects, "defense")
+      ),
+      renderStatusEffect(
+        "spd",
+        sumStatusEffects(player.statusEffects, "speed")
+      ),
     ]
       .filter((element) => element)
       .join(" ") + "\n"
@@ -73,7 +84,7 @@ const render = (menu: Array<Menu>, selected: number) => {
   clear({ width: WIDTH, height: HEIGHT })
   process.stdout.cursorTo(0, 0)
 
-  renderName("Enemy", gameState.enemy.statusEffects)
+  renderNameBar("Enemy", gameState.enemy, false)
   renderLifeBar({
     width: WIDTH,
     current: getInterpolatedLife(
@@ -89,10 +100,11 @@ const render = (menu: Array<Menu>, selected: number) => {
   )
 
   process.stdout.write("\n")
-  renderName(
+  renderNameBar(
     "You",
-    gameState.me.statusEffects,
-    `(${Math.floor(meLifeInterpolated)}/${gameState.me.baseStats.life})`
+    gameState.me,
+    true,
+    `HP[${Math.ceil(meLifeInterpolated)}/${getStats(gameState.me).life}]`
   )
   renderLifeBar({
     width: WIDTH,
