@@ -110,7 +110,9 @@ const render = (menu: Array<Menu>, selected: number) => {
   if (gameState.log.length > 0) {
     process.stdout.write(
       "\n\n--- LOG ----------------------\n" +
-        gameState.log.map((obj) => JSON.stringify(obj)).join(" ")
+        gameState.log
+          .map((obj) => (obj === "\n" ? obj : JSON.stringify(obj)))
+          .join(" ")
     )
   }
 }
@@ -128,10 +130,6 @@ const run = async () => {
 }
 
 run()
-
-function log(...strings: Array<string>) {
-  gameState.log = [...strings]
-}
 
 process.stdin.setRawMode(true)
 process.stdin.resume()
