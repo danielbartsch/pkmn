@@ -1,4 +1,4 @@
-[![asciicast](https://asciinema.org/a/431287.svg)](https://asciinema.org/a/431287)
+[![asciicast](https://asciinema.org/a/fE3S9WXadnjjuPF07TEhTkaNc.svg)](https://asciinema.org/a/fE3S9WXadnjjuPF07TEhTkaNc)
 
 ```
 npm i
