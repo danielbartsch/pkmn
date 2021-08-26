@@ -39,11 +39,10 @@ const getInterpolatedLife = (
   const percentageAnimation =
     passedTime > duration ? 0 : 1 - passedTime / duration
 
-  const value = Math.floor(
-    startedAt
-      ? targetLife + percentageAnimation * (fromLife - targetLife)
-      : targetLife
-  )
+  const value = startedAt
+    ? targetLife + percentageAnimation * (fromLife - targetLife)
+    : targetLife
+
   return value <= 0 ? 0 : value
 }
 
@@ -93,7 +92,7 @@ const render = (menu: Array<Menu>, selected: number) => {
   renderName(
     "You",
     gameState.me.statusEffects,
-    `(${meLifeInterpolated}/${gameState.me.lifeMax})`
+    `(${Math.floor(meLifeInterpolated)}/${gameState.me.baseStats.life})`
   )
   renderLifeBar({
     width: WIDTH,
