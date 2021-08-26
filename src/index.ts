@@ -78,7 +78,7 @@ const renderNameBar = (
   )
 }
 
-const WIDTH = 30
+const WIDTH = 36
 const HEIGHT = 11
 const render = (menu: Array<Menu>, selected: number) => {
   clear({ width: WIDTH, height: HEIGHT })

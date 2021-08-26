@@ -22,8 +22,8 @@ export const attacks: Array<Attack> = [
     label: "Tackle",
     key: "tackle",
     type: "action",
-    damage: 10,
-    chanceToSucceed: 0.9,
+    damage: 5,
+    chanceToSucceed: 0.95,
     chanceToCritical: 0.05,
   },
   {
@@ -57,9 +57,9 @@ export const attacks: Array<Attack> = [
     label: "Crit",
     key: "crit",
     type: "action",
-    damage: 20,
-    chanceToSucceed: 1,
-    chanceToCritical: 1,
+    damage: 4.5,
+    chanceToSucceed: 0.85,
+    chanceToCritical: 0.4,
   },
 ]
 
