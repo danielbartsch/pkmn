@@ -1,5 +1,5 @@
 import * as textFormat from "./textFormat"
-import { Menu, renderMenu, selectMenu, menu, Attack, attacks } from "./menu"
+import { Menu, renderMenu, selectMenu, menu } from "./menu"
 import { renderLifeBar } from "./lifeBar"
 import { gameState, Player, Status } from "./gameState"
 import { sleep } from "./util"
