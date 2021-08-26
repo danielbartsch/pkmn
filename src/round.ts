@@ -142,7 +142,10 @@ export const round = async (menuEntry: Attack) => {
   gameState.ownTurn = true
 }
 
-function getActionOrder(meSpeed: number, enemySpeed: number) {
+function getActionOrder(
+  meSpeed: number,
+  enemySpeed: number
+): ["meAction" | "enemyAction", "meAction" | "enemyAction"] {
   if (meSpeed > enemySpeed) return ["meAction", "enemyAction"]
   if (meSpeed < enemySpeed) return ["enemyAction", "meAction"]
   if (Math.random() < 0.5) return ["meAction", "enemyAction"]
