@@ -1,4 +1,4 @@
-import { Status } from "./gameState"
+import { Player, Status } from "./gameState"
 import * as textFormat from "./textFormat"
 
 export type Attack = {
@@ -11,10 +11,17 @@ export type Attack = {
   statusEffects?: Array<Status & { target: "me" | "enemy" }>
 }
 
+export type Info = {
+  label: string
+  key: string
+  type: "info"
+  info: Array<string>
+}
+
 type MenuElement = {
   label: string
   key: string
-} & ({ type: "menu" | "setting" } | Attack)
+} & ({ type: "menu" | "setting" } | Attack | Info)
 export type Menu = [MenuElement, Array<Menu>] | MenuElement
 
 export const attacks: Array<Attack> = [
@@ -63,7 +70,7 @@ export const attacks: Array<Attack> = [
   },
 ]
 
-export const menu: Array<Menu> = [
+export const getMenu = (players: Array<Player>): Array<Menu> => [
   [{ label: "Attack", key: "attack", type: "menu" }, attacks],
   {
     label: "Flee",
@@ -95,6 +102,18 @@ export const menu: Array<Menu> = [
       ],
     ],
   ],
+  [
+    { label: "Inspect", key: "inspect", type: "menu" },
+    players.map((player) => ({
+      label: player.name,
+      key: player.name,
+      type: "info",
+      info: Object.keys(player.currentStats).map(
+        (key: keyof typeof player.currentStats) =>
+          rightPad(key, 7) + " " + player.currentStats[key]
+      ),
+    })),
+  ],
 ]
 
 const selectedMenu = (string: string) =>
@@ -111,19 +130,49 @@ export const renderMenu = (menu: Array<Menu>, selected: number) => {
   )
 
   const currentMenu = menu[selected]
-  if (
-    !Array.isArray(currentMenu) &&
-    currentMenu.key !== "flee" &&
-    currentMenu.type === "action"
-  ) {
-    process.stdout.write(
-      "\n\n Damage   " +
-        currentMenu.damage +
-        "\n Accuracy " +
-        currentMenu.chanceToSucceed * 100 +
-        "%\n"
-    )
+  if (!Array.isArray(currentMenu)) {
+    if (currentMenu.key !== "flee" && currentMenu.type === "action") {
+      process.stdout.write(
+        "\n\n Damage   " +
+          currentMenu.damage +
+          "\n Accuracy " +
+          currentMenu.chanceToSucceed * 100 +
+          "%\n"
+      )
+    } else if (currentMenu.type === "info") {
+      process.stdout.write(
+        "\n\n" +
+          group(currentMenu.info, 2)
+            .map((group) =>
+              group.map((stat) => rightPad(upperFirst(stat), 10)).join(" | ")
+            )
+            .join("\n")
+      )
+    }
   }
+}
+
+const rightPad = (string: string, pad: number) => {
+  if (string.length > pad) {
+    return string
+  }
+  return string + " ".repeat(pad - string.length)
+}
+
+const upperFirst = (string: string) =>
+  string[0].toLocaleUpperCase() + string.slice(1)
+
+const group = <T>(array: Array<T>, size: number): Array<Array<T>> => {
+  let currentSize = size
+  let index = 0
+  return array.reduce((acc, current) => {
+    acc[index] = (acc[index] ?? []).concat([current])
+    currentSize--
+    if (currentSize === 0) {
+      index++
+    }
+    return acc
+  }, [])
 }
 
 export const selectMenu = (

@@ -1,5 +1,5 @@
 import * as textFormat from "./textFormat"
-import { Menu, renderMenu, selectMenu, menu } from "./menu"
+import { Menu, renderMenu, selectMenu, getMenu } from "./menu"
 import { renderLifeBar } from "./lifeBar"
 import { gameState, getStats, Player } from "./gameState"
 import { sleep } from "./util"
@@ -128,6 +128,7 @@ const run = async () => {
   clear({ width: WIDTH + 1, height: HEIGHT + 1, char: "█" })
   gameState.enemy.currentStats = getStats(gameState.enemy)
   gameState.me.currentStats = getStats(gameState.me)
+  const menu = getMenu([gameState.enemy, gameState.me])
   while (true) {
     render(
       selectMenu(menu, gameState.selected),
@@ -149,7 +150,10 @@ process.stdin.on("data", async function (key: string) {
   }
   if (gameState.ownTurn) {
     const lastSelected = gameState.selected[gameState.selected.length - 1]
-    const currentMenu = selectMenu(menu, gameState.selected)
+    const currentMenu = selectMenu(
+      getMenu([gameState.enemy, gameState.me]),
+      gameState.selected
+    )
 
     switch (key) {
       case KEYS.right: {
