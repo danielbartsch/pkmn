@@ -49,16 +49,11 @@ const getInterpolatedLife = (
 const renderStatusEffect = (name: string, severity: number) =>
   severity === 0 ? "" : name + (severity > 0 ? "+" + severity : severity)
 
-const renderNameBar = (
-  name: string,
-  player: Player,
-  me: boolean,
-  exactLife?: string
-) => {
+const renderNameBar = (player: Player, me: boolean, exactLife?: string) => {
   process.stdout.write(
     [
       "L[" + player.level + "]",
-      name,
+      player.name,
       me ? exactLife : "",
       renderStatusEffect(
         "atk",
@@ -84,7 +79,7 @@ const render = (menu: Array<Menu>, selected: number) => {
   clear({ width: WIDTH, height: HEIGHT })
   process.stdout.cursorTo(0, 0)
 
-  renderNameBar("Enemy", gameState.enemy, false)
+  renderNameBar(gameState.enemy, false)
   renderLifeBar({
     width: WIDTH,
     current: getInterpolatedLife(
@@ -101,7 +96,6 @@ const render = (menu: Array<Menu>, selected: number) => {
 
   process.stdout.write("\n")
   renderNameBar(
-    "You",
     gameState.me,
     true,
     `HP[${Math.ceil(meLifeInterpolated)}/${getStats(gameState.me).life}]`

@@ -12,6 +12,7 @@ type Stats = {
 }
 
 export type Player = {
+  name: string
   level: number
   currentStats: Stats
   baseStats: Stats
@@ -47,6 +48,7 @@ export const getStats = (player: Player): Stats => ({
 
 export const gameState: GameState = {
   enemy: {
+    name: "Apedt",
     level: 5,
     currentStats: {
       life: 0,
@@ -68,6 +70,7 @@ export const gameState: GameState = {
     },
   },
   me: {
+    name: "Yogda",
     level: 5,
     currentStats: {
       life: 0,
