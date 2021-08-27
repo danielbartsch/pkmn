@@ -11,7 +11,7 @@ type Stats = {
   speed: number
 }
 
-export type Player = {
+export type Fighter = {
   name: string
   level: number
   currentStats: Stats
@@ -25,8 +25,8 @@ export type Player = {
 }
 
 type GameState = {
-  enemy: Player
-  me: Player
+  enemy: Fighter
+  me: Fighter
   ownTurn: boolean
   selected: Array<number>
   lastSelected: Array<number>
@@ -39,11 +39,11 @@ type GameState = {
   log: Array<any>
 }
 
-export const getStats = (player: Player): Stats => ({
-  life: player.level * player.baseStats.life,
-  attack: player.level * player.baseStats.attack,
-  defense: player.level * player.baseStats.defense,
-  speed: player.level * player.baseStats.speed,
+export const getStats = (fighter: Fighter): Stats => ({
+  life: fighter.level * fighter.baseStats.life,
+  attack: fighter.level * fighter.baseStats.attack,
+  defense: fighter.level * fighter.baseStats.defense,
+  speed: fighter.level * fighter.baseStats.speed,
 })
 
 export const gameState: GameState = {

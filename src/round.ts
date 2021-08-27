@@ -1,5 +1,5 @@
 import { animateText } from "./animateText"
-import { gameState, Player, Status } from "./gameState"
+import { gameState, Fighter, Status } from "./gameState"
 import { Attack, attacks } from "./menu"
 import * as textFormat from "./textFormat"
 import { sleep } from "./util"
@@ -39,7 +39,7 @@ export const sumStatusEffects = (
 const variancePercent = (variance = 0.2) =>
   Math.random() * variance + (1 - variance / 2)
 
-const attack = async (menuEntry: Attack, actor: Player, target: Player) => {
+const attack = async (menuEntry: Attack, actor: Fighter, target: Fighter) => {
   if (Math.random() < menuEntry.chanceToSucceed) {
     const isCritical = Math.random() < menuEntry.chanceToCritical
 
@@ -71,8 +71,8 @@ const attack = async (menuEntry: Attack, actor: Player, target: Player) => {
 
     menuEntry.statusEffects?.forEach(
       ({ change, severity, target: statusEffectTarget }) => {
-        const player = statusEffectTarget === "enemy" ? target : actor
-        player.statusEffects.push({
+        const fighter = statusEffectTarget === "enemy" ? target : actor
+        fighter.statusEffects.push({
           change,
           severity,
         })

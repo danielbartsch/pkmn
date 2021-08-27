@@ -1,7 +1,7 @@
 import * as textFormat from "./textFormat"
 import { Menu, renderMenu, selectMenu, getMenu } from "./menu"
 import { renderLifeBar } from "./lifeBar"
-import { gameState, getStats, Player } from "./gameState"
+import { gameState, getStats, Fighter } from "./gameState"
 import { sleep } from "./util"
 import { round, sumStatusEffects } from "./round"
 
@@ -33,7 +33,7 @@ const renderTextAnimation = ({
 
 const getInterpolatedLife = (
   targetLife: number,
-  { startedAt, duration, from: fromLife }: Player["lifeBarAnimation"]
+  { startedAt, duration, from: fromLife }: Fighter["lifeBarAnimation"]
 ) => {
   const passedTime = Date.now() - startedAt
   const percentageAnimation =
@@ -49,23 +49,23 @@ const getInterpolatedLife = (
 const renderStatusEffect = (name: string, severity: number) =>
   severity === 0 ? "" : name + (severity > 0 ? "+" + severity : severity)
 
-const renderNameBar = (player: Player, me: boolean, exactLife?: string) => {
+const renderNameBar = (fighter: Fighter, me: boolean, exactLife?: string) => {
   process.stdout.write(
     [
-      "L[" + player.level + "]",
-      player.name,
+      "L[" + fighter.level + "]",
+      fighter.name,
       me ? exactLife : "",
       renderStatusEffect(
         "atk",
-        sumStatusEffects(player.statusEffects, "attack")
+        sumStatusEffects(fighter.statusEffects, "attack")
       ),
       renderStatusEffect(
         "def",
-        sumStatusEffects(player.statusEffects, "defense")
+        sumStatusEffects(fighter.statusEffects, "defense")
       ),
       renderStatusEffect(
         "spd",
-        sumStatusEffects(player.statusEffects, "speed")
+        sumStatusEffects(fighter.statusEffects, "speed")
       ),
     ]
       .filter((element) => element)

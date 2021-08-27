@@ -1,4 +1,4 @@
-import { Player, Status } from "./gameState"
+import { Fighter, Status } from "./gameState"
 import * as textFormat from "./textFormat"
 
 export type Attack = {
@@ -70,7 +70,7 @@ export const attacks: Array<Attack> = [
   },
 ]
 
-export const getMenu = (players: Array<Player>): Array<Menu> => [
+export const getMenu = (fighters: Array<Fighter>): Array<Menu> => [
   [{ label: "Attack", key: "attack", type: "menu" }, attacks],
   {
     label: "Flee",
@@ -104,13 +104,13 @@ export const getMenu = (players: Array<Player>): Array<Menu> => [
   ],
   [
     { label: "Inspect", key: "inspect", type: "menu" },
-    players.map((player) => ({
-      label: player.name,
-      key: player.name,
+    fighters.map((fighter) => ({
+      label: fighter.name,
+      key: fighter.name,
       type: "info",
-      info: Object.keys(player.currentStats).map(
-        (key: keyof typeof player.currentStats) =>
-          rightPad(key, 7) + " " + player.currentStats[key]
+      info: Object.keys(fighter.currentStats).map(
+        (key: keyof typeof fighter.currentStats) =>
+          rightPad(key, 7) + " " + fighter.currentStats[key]
       ),
     })),
   ],
