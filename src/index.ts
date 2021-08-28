@@ -73,37 +73,54 @@ const renderNameBar = (fighter: Fighter, me: boolean, exactLife?: string) => {
   )
 }
 
+const renderTeamBar = (fighters: Array<Fighter>) => {
+  const team =
+    fighters
+      .map((fighter) => (fighter.currentStats.life === 0 ? "○" : "◍"))
+      .join(" ") + " "
+  process.stdout.write(leftPad(team, WIDTH) + "\n")
+}
+
+const leftPad = (string: string, pad: number) => {
+  if (string.length > pad) {
+    return string
+  }
+  return " ".repeat(pad - string.length) + string
+}
+
 const WIDTH = 36
-const HEIGHT = 11
+const HEIGHT = 13
 const render = (menu: Array<Menu>, selected: number) => {
   clear({ width: WIDTH, height: HEIGHT })
   process.stdout.cursorTo(0, 0)
 
-  renderNameBar(gameState.enemy, false)
+  renderTeamBar(gameState.enemy)
+  renderNameBar(gameState.enemy[0], false)
   renderLifeBar({
     width: WIDTH,
     current: getInterpolatedLife(
-      gameState.enemy.currentStats.life,
-      gameState.enemy.lifeBarAnimation
+      gameState.enemy[0].currentStats.life,
+      gameState.enemy[0].lifeBarAnimation
     ),
-    max: getStats(gameState.enemy).life,
+    max: getStats(gameState.enemy[0]).life,
   })
 
   const meLifeInterpolated = getInterpolatedLife(
-    gameState.me.currentStats.life,
-    gameState.me.lifeBarAnimation
+    gameState.me[0].currentStats.life,
+    gameState.me[0].lifeBarAnimation
   )
 
   process.stdout.write("\n")
+  renderTeamBar(gameState.me)
   renderNameBar(
-    gameState.me,
+    gameState.me[0],
     true,
-    `HP[${Math.ceil(meLifeInterpolated)}/${getStats(gameState.me).life}]`
+    `HP[${Math.ceil(meLifeInterpolated)}/${getStats(gameState.me[0]).life}]`
   )
   renderLifeBar({
     width: WIDTH,
     current: meLifeInterpolated,
-    max: getStats(gameState.me).life,
+    max: getStats(gameState.me[0]).life,
   })
   process.stdout.write("\n")
 
@@ -126,9 +143,10 @@ const render = (menu: Array<Menu>, selected: number) => {
 const run = async () => {
   clear({ width, height })
   clear({ width: WIDTH + 1, height: HEIGHT + 1, char: "█" })
-  gameState.enemy.currentStats = getStats(gameState.enemy)
-  gameState.me.currentStats = getStats(gameState.me)
-  const menu = getMenu([gameState.enemy, gameState.me])
+  gameState.enemy.concat(gameState.me).forEach((player) => {
+    player.currentStats = getStats(player)
+  })
+  const menu = getMenu([gameState.enemy[0], gameState.me[0]])
   while (true) {
     render(
       selectMenu(menu, gameState.selected),
@@ -151,7 +169,7 @@ process.stdin.on("data", async function (key: string) {
   if (gameState.ownTurn) {
     const lastSelected = gameState.selected[gameState.selected.length - 1]
     const currentMenu = selectMenu(
-      getMenu([gameState.enemy, gameState.me]),
+      getMenu([gameState.enemy[0], gameState.me[0]]),
       gameState.selected
     )
 

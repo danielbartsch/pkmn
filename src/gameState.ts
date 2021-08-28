@@ -25,8 +25,8 @@ export type Fighter = {
 }
 
 type GameState = {
-  enemy: Fighter
-  me: Fighter
+  enemy: Array<Fighter> // first one is currently fighting
+  me: Array<Fighter> // first one is currently fighting
   ownTurn: boolean
   selected: Array<number>
   lastSelected: Array<number>
@@ -47,50 +47,54 @@ export const getStats = (fighter: Fighter): Stats => ({
 })
 
 export const gameState: GameState = {
-  enemy: {
-    name: "Apedt",
-    level: 5,
-    currentStats: {
-      life: 0,
-      attack: 0,
-      defense: 0,
-      speed: 0,
+  enemy: [
+    {
+      name: "Apedt",
+      level: 5,
+      currentStats: {
+        life: 0,
+        attack: 0,
+        defense: 0,
+        speed: 0,
+      },
+      baseStats: {
+        life: 3,
+        attack: 5,
+        defense: 3,
+        speed: 2,
+      },
+      statusEffects: [],
+      lifeBarAnimation: {
+        startedAt: null,
+        from: null,
+        duration: 1000,
+      },
     },
-    baseStats: {
-      life: 3,
-      attack: 5,
-      defense: 3,
-      speed: 2,
+  ],
+  me: [
+    {
+      name: "Yogda",
+      level: 5,
+      currentStats: {
+        life: 0,
+        attack: 0,
+        defense: 0,
+        speed: 0,
+      },
+      baseStats: {
+        life: 3,
+        attack: 3,
+        defense: 5,
+        speed: 2,
+      },
+      statusEffects: [],
+      lifeBarAnimation: {
+        startedAt: null,
+        from: null,
+        duration: 1000,
+      },
     },
-    statusEffects: [],
-    lifeBarAnimation: {
-      startedAt: null,
-      from: null,
-      duration: 1000,
-    },
-  },
-  me: {
-    name: "Yogda",
-    level: 5,
-    currentStats: {
-      life: 0,
-      attack: 0,
-      defense: 0,
-      speed: 0,
-    },
-    baseStats: {
-      life: 3,
-      attack: 3,
-      defense: 5,
-      speed: 2,
-    },
-    statusEffects: [],
-    lifeBarAnimation: {
-      startedAt: null,
-      from: null,
-      duration: 1000,
-    },
-  },
+  ],
   ownTurn: true,
   selected: [0],
   lastSelected: [],

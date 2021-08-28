@@ -105,14 +105,17 @@ export const round = async (menuEntry: Attack) => {
           await animateText("Couldn't flee.")
         }
       } else {
-        await animateText("You use " + menuEntry.label + ".")
-        await attack(menuEntry, gameState.me, gameState.enemy)
+        await animateText(
+          gameState.me[0].name + " uses " + menuEntry.label + "."
+        )
+        await attack(menuEntry, gameState.me[0], gameState.enemy[0])
       }
 
-      if (gameState.enemy.currentStats.life <= 0) {
+      if (gameState.enemy[0].currentStats.life <= 0) {
         gameState.ownTurn = false
         await animateText(
-          "Enemy cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
+          gameState.enemy[0].name +
+            " (enemy) cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
             textFormat.green("You won!")
         )
         process.exit(0)
@@ -120,12 +123,15 @@ export const round = async (menuEntry: Attack) => {
     },
     enemyAction: async () => {
       const enemyMenuEntry = attacks[Math.floor(Math.random() * attacks.length)]
-      await animateText("Enemy uses " + enemyMenuEntry.label + ".")
-      await attack(enemyMenuEntry, gameState.enemy, gameState.me)
+      await animateText(
+        gameState.enemy[0].name + " (enemy) uses " + enemyMenuEntry.label + "."
+      )
+      await attack(enemyMenuEntry, gameState.enemy[0], gameState.me[0])
 
-      if (gameState.me.currentStats.life <= 0) {
+      if (gameState.me[0].currentStats.life <= 0) {
         await animateText(
-          "You cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
+          gameState.me[0].name +
+            " cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
             textFormat.red("You lost!")
         )
         process.exit(0)
@@ -134,8 +140,8 @@ export const round = async (menuEntry: Attack) => {
   }
 
   const actionOrder = getActionOrder(
-    sumStatusEffects(gameState.me.statusEffects, "speed"),
-    sumStatusEffects(gameState.enemy.statusEffects, "speed")
+    sumStatusEffects(gameState.me[0].statusEffects, "speed"),
+    sumStatusEffects(gameState.enemy[0].statusEffects, "speed")
   )
 
   await actions[actionOrder[0]]()
