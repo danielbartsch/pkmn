@@ -11,11 +11,15 @@ type Stats = {
   speed: number
 }
 
-export type Fighter = {
+type FighterType = {
   name: string
+  baseStats: Stats
+}
+
+export type Fighter = {
+  type: FighterType
   level: number
   currentStats: Stats
-  baseStats: Stats
   statusEffects: Array<Status>
   lifeBarAnimation: {
     startedAt: number | null
@@ -40,28 +44,45 @@ type GameState = {
 }
 
 export const getStats = (fighter: Fighter): Stats => ({
-  life: fighter.level * fighter.baseStats.life,
-  attack: fighter.level * fighter.baseStats.attack,
-  defense: fighter.level * fighter.baseStats.defense,
-  speed: fighter.level * fighter.baseStats.speed,
+  life: fighter.level * fighter.type.baseStats.life,
+  attack: fighter.level * fighter.type.baseStats.attack,
+  defense: fighter.level * fighter.type.baseStats.defense,
+  speed: fighter.level * fighter.type.baseStats.speed,
 })
+
+const fighterType: Record<string, FighterType> = {
+  apedt: {
+    name: "Apedt",
+
+    baseStats: {
+      life: 3,
+      attack: 5,
+      defense: 3,
+      speed: 2,
+    },
+  },
+  yogda: {
+    name: "Yogda",
+
+    baseStats: {
+      life: 3,
+      attack: 3,
+      defense: 5,
+      speed: 2,
+    },
+  },
+}
 
 export const gameState: GameState = {
   enemy: [
     {
-      name: "Apedt",
+      type: fighterType.apedt,
       level: 5,
       currentStats: {
         life: 0,
         attack: 0,
         defense: 0,
         speed: 0,
-      },
-      baseStats: {
-        life: 3,
-        attack: 5,
-        defense: 3,
-        speed: 2,
       },
       statusEffects: [],
       lifeBarAnimation: {
@@ -73,19 +94,13 @@ export const gameState: GameState = {
   ],
   me: [
     {
-      name: "Yogda",
+      type: fighterType.yogda,
       level: 5,
       currentStats: {
         life: 0,
         attack: 0,
         defense: 0,
         speed: 0,
-      },
-      baseStats: {
-        life: 3,
-        attack: 3,
-        defense: 5,
-        speed: 2,
       },
       statusEffects: [],
       lifeBarAnimation: {

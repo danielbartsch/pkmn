@@ -106,7 +106,7 @@ export const round = async (menuEntry: Attack) => {
         }
       } else {
         await animateText(
-          gameState.me[0].name + " uses " + menuEntry.label + "."
+          gameState.me[0].type.name + " uses " + menuEntry.label + "."
         )
         await attack(menuEntry, gameState.me[0], gameState.enemy[0])
       }
@@ -114,7 +114,7 @@ export const round = async (menuEntry: Attack) => {
       if (gameState.enemy[0].currentStats.life <= 0) {
         gameState.ownTurn = false
         await animateText(
-          gameState.enemy[0].name +
+          gameState.enemy[0].type.name +
             " (enemy) cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
             textFormat.green("You won!")
         )
@@ -124,13 +124,16 @@ export const round = async (menuEntry: Attack) => {
     enemyAction: async () => {
       const enemyMenuEntry = attacks[Math.floor(Math.random() * attacks.length)]
       await animateText(
-        gameState.enemy[0].name + " (enemy) uses " + enemyMenuEntry.label + "."
+        gameState.enemy[0].type.name +
+          " (enemy) uses " +
+          enemyMenuEntry.label +
+          "."
       )
       await attack(enemyMenuEntry, gameState.enemy[0], gameState.me[0])
 
       if (gameState.me[0].currentStats.life <= 0) {
         await animateText(
-          gameState.me[0].name +
+          gameState.me[0].type.name +
             " cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
             textFormat.red("You lost!")
         )

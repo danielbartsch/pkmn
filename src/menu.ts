@@ -105,8 +105,8 @@ export const getMenu = (fighters: Array<Fighter>): Array<Menu> => [
   [
     { label: "Inspect", key: "inspect", type: "menu" },
     fighters.map((fighter) => ({
-      label: fighter.name,
-      key: fighter.name,
+      label: fighter.type.name,
+      key: fighter.type.name,
       type: "info",
       info: Object.keys(fighter.currentStats).map(
         (key: keyof typeof fighter.currentStats) =>

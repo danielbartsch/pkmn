@@ -53,7 +53,7 @@ const renderNameBar = (fighter: Fighter, me: boolean, exactLife?: string) => {
   process.stdout.write(
     [
       "L[" + fighter.level + "]",
-      fighter.name,
+      fighter.type.name,
       me ? exactLife : "",
       renderStatusEffect(
         "atk",
