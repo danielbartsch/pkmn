@@ -114,11 +114,22 @@ export const round = async (menuEntry: Attack) => {
       if (gameState.enemy[0].currentStats.life <= 0) {
         gameState.ownTurn = false
         await animateText(
-          gameState.enemy[0].type.name +
-            " (enemy) cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
-            textFormat.green("You won!")
+          gameState.enemy[0].type.name + " (enemy) is defeated."
         )
-        process.exit(0)
+        const enemyHasAnotherFighter = gameState.enemy.some(
+          (player) => player.currentStats.life !== 0
+        )
+        if (!enemyHasAnotherFighter) {
+          await animateText(
+            "Enemy has no more fighters.\0\0\0\0\0\0\0\n" +
+              textFormat.green("You won!")
+          )
+          process.exit(0)
+        } else {
+          const defeatedFighter = gameState.enemy.shift()
+          await animateText(gameState.enemy[0].type.name + " joins the fight.")
+          gameState.enemy.push(defeatedFighter)
+        }
       }
     },
     enemyAction: async () => {
@@ -132,12 +143,21 @@ export const round = async (menuEntry: Attack) => {
       await attack(enemyMenuEntry, gameState.enemy[0], gameState.me[0])
 
       if (gameState.me[0].currentStats.life <= 0) {
-        await animateText(
-          gameState.me[0].type.name +
-            " cannot fight anymore.\0\0\0\0\0\0\0\0\0\n" +
-            textFormat.red("You lost!")
+        await animateText(gameState.me[0].type.name + " is defeated.")
+        const meHasAnotherFighter = gameState.me.some(
+          (player) => player.currentStats.life !== 0
         )
-        process.exit(0)
+        if (!meHasAnotherFighter) {
+          await animateText(
+            "You have no more fighters.\0\0\0\0\0\0\0\n" +
+              textFormat.green("You lost!")
+          )
+          process.exit(0)
+        } else {
+          const defeatedFighter = gameState.me.shift()
+          await animateText(gameState.me[0].type.name + " joins the fight.")
+          gameState.me.push(defeatedFighter)
+        }
       }
     },
   }

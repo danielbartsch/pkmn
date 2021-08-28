@@ -1,19 +1,8 @@
+import { Stats, FighterType, fighterTypes } from "./fighterTypes"
+
 export type Status = {
   change: "attack" | "defense" | "speed"
   severity: number
-}
-
-type Stats = {
-  // values 0 to 10
-  life: number
-  attack: number
-  defense: number
-  speed: number
-}
-
-type FighterType = {
-  name: string
-  baseStats: Stats
 }
 
 export type Fighter = {
@@ -50,33 +39,26 @@ export const getStats = (fighter: Fighter): Stats => ({
   speed: fighter.level * fighter.type.baseStats.speed,
 })
 
-const fighterType: Record<string, FighterType> = {
-  apedt: {
-    name: "Apedt",
-
-    baseStats: {
-      life: 3,
-      attack: 5,
-      defense: 3,
-      speed: 2,
-    },
-  },
-  yogda: {
-    name: "Yogda",
-
-    baseStats: {
-      life: 3,
-      attack: 3,
-      defense: 5,
-      speed: 2,
-    },
-  },
-}
-
 export const gameState: GameState = {
   enemy: [
     {
-      type: fighterType.apedt,
+      type: fighterTypes.apedt,
+      level: 5,
+      currentStats: {
+        life: 0,
+        attack: 0,
+        defense: 0,
+        speed: 0,
+      },
+      statusEffects: [],
+      lifeBarAnimation: {
+        startedAt: null,
+        from: null,
+        duration: 1000,
+      },
+    },
+    {
+      type: fighterTypes.enbor,
       level: 5,
       currentStats: {
         life: 0,
@@ -94,7 +76,23 @@ export const gameState: GameState = {
   ],
   me: [
     {
-      type: fighterType.yogda,
+      type: fighterTypes.yogda,
+      level: 5,
+      currentStats: {
+        life: 0,
+        attack: 0,
+        defense: 0,
+        speed: 0,
+      },
+      statusEffects: [],
+      lifeBarAnimation: {
+        startedAt: null,
+        from: null,
+        duration: 1000,
+      },
+    },
+    {
+      type: fighterTypes.linvag,
       level: 5,
       currentStats: {
         life: 0,
