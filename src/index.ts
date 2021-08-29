@@ -228,22 +228,6 @@ process.stdin.on("data", async function (key: string) {
                   gameState.textAnimation.textSpeed = 10
                   break
                 }
-                case "yellow": {
-                  gameState.textAnimation.textColor = "yellow"
-                  break
-                }
-                case "black": {
-                  gameState.textAnimation.textColor = "black"
-                  break
-                }
-                case "white": {
-                  gameState.textAnimation.textColor = "white"
-                  break
-                }
-                case "green": {
-                  gameState.textAnimation.textColor = "green"
-                  break
-                }
               }
               gameState.selected = [0]
               break

@@ -91,15 +91,6 @@ export const getMenu = (fighters: Array<Fighter>): Array<Menu> => [
           { label: "Fast", key: "fast", type: "setting" },
         ],
       ],
-      [
-        { label: "Text color", key: "textcolor", type: "menu" },
-        [
-          { label: "Green", key: "green", type: "setting" },
-          { label: "White", key: "white", type: "setting" },
-          { label: "Black", key: "black", type: "setting" },
-          { label: "Yellow", key: "yellow", type: "setting" },
-        ],
-      ],
     ],
   ],
   [
