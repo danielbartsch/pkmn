@@ -74,18 +74,22 @@ const renderNameBar = (fighter: Fighter, me: boolean, exactLife?: string) => {
 }
 
 const renderTeamBar = (fighters: Array<Fighter>) => {
-  const team =
-    fighters
-      .map((fighter) => (fighter.currentStats.life === 0 ? "○" : "◍"))
-      .join(" ") + " "
-  process.stdout.write(leftPad(team, WIDTH) + "\n")
+  const team = fighters.map((fighter) =>
+    fighter.currentStats.life === 0
+      ? textFormat.red("○")
+      : textFormat.green("◍")
+  )
+
+  process.stdout.write(
+    leftPad(team.join(" ") + " ", WIDTH, fighters.length * 2 + 1) + "\n"
+  )
 }
 
-const leftPad = (string: string, pad: number) => {
-  if (string.length > pad) {
+const leftPad = (string: string, pad: number, stringLength = string.length) => {
+  if (stringLength > pad) {
     return string
   }
-  return " ".repeat(pad - string.length) + string
+  return " ".repeat(pad - stringLength) + string
 }
 
 const WIDTH = 36
