@@ -96,7 +96,7 @@ export const round = async (menuEntry: Attack) => {
   gameState.selected = [gameState.lastSelected[0]]
 
   const actions = {
-    meAction: async () => {
+    meAction: async (): Promise<"defeat" | "no defeat"> => {
       if (menuEntry.key === "flee") {
         if (Math.random() < menuEntry.chanceToSucceed) {
           await animateText("You fled!")
@@ -114,9 +114,11 @@ export const round = async (menuEntry: Attack) => {
       if (gameState.enemy[0].currentStats.life <= 0) {
         gameState.ownTurn = false
         await defeat(gameState.enemy, true)
+        return "defeat"
       }
+      return "no defeat"
     },
-    enemyAction: async () => {
+    enemyAction: async (): Promise<"defeat" | "no defeat"> => {
       const enemyMenuEntry =
         gameState.enemy[0].attacks[
           Math.floor(Math.random() * gameState.enemy[0].attacks.length)
@@ -131,7 +133,9 @@ export const round = async (menuEntry: Attack) => {
 
       if (gameState.me[0].currentStats.life <= 0) {
         await defeat(gameState.me, false)
+        return "defeat"
       }
+      return "no defeat"
     },
   }
 
@@ -140,8 +144,9 @@ export const round = async (menuEntry: Attack) => {
     sumStatusEffects(gameState.enemy[0].statusEffects, "speed")
   )
 
-  await actions[actionOrder[0]]()
-  await actions[actionOrder[1]]()
+  if ((await actions[actionOrder[0]]()) === "no defeat") {
+    await actions[actionOrder[1]]()
+  }
 
   gameState.ownTurn = true
 }
