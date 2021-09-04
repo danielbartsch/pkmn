@@ -27,7 +27,8 @@ export const animateText = async (
 
 export const wrapText = (text: string, maxWidth: number): string => {
   if (textLength(text) > maxWidth) {
-    const words = text.split(" ")
+    const preWrappedText = text.split("\n")
+    const words = preWrappedText[preWrappedText.length - 1].split(" ")
     const { current: wordsUnderMaxWidth, missing } = words.reduce(
       (acc, word) => {
         if (acc.nextLine) {
@@ -49,6 +50,9 @@ export const wrapText = (text: string, maxWidth: number): string => {
       }
     )
     return (
+      (text.includes("\n")
+        ? preWrappedText.slice(0, -1).join("\n") + "\n"
+        : "") +
       wordsUnderMaxWidth.join(" ") +
       "\n" +
       wrapText(missing.join(" "), maxWidth)

@@ -3,17 +3,24 @@ import { test, assertEqual, run } from "@danielbartsch/testing"
 import { wrapText, textLength, selectText } from "./animateText"
 import * as textFormat from "./textFormat"
 
-test("text below maximum length", () => {
+test("don't wrap text below maximum length", () => {
   const text = "Short text"
   assertEqual(text, wrapText(text, 20))
 })
-test("text slightly above maximum length", () => {
+test("wrap text slightly above maximum length", () => {
   const text = "Short text"
   assertEqual("Short\ntext", wrapText(text, 9))
 })
-test("text longer words", () => {
+test("wrap text longer words", () => {
   const text = "55555 88888888 22 21 1"
   assertEqual("55555\n88888888\n22 21 1", wrapText(text, 10))
+})
+test("wrap prewrapped text", () => {
+  const text = "Some\nreally\ncool text that has line breaks in it already!"
+  assertEqual(
+    "Some\nreally\ncool text\nthat has\nline\nbreaks in\nit\nalready!",
+    wrapText(text, 10)
+  )
 })
 
 test("text length without anything special", () => {
