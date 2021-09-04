@@ -110,7 +110,7 @@ const attack = async (menuEntry: Attack, actor: Fighter, target: Fighter) => {
       await animateText("Critical hit!")
     }
   } else {
-    await animateText(menuEntry.label + " missed!")
+    await animateText(textFormat.blue(menuEntry.label) + " missed!")
   }
 }
 
@@ -123,14 +123,17 @@ export const round = async (menuEntry: Attack) => {
     meAction: async (): Promise<"defeat" | "no defeat"> => {
       if (menuEntry.key === "flee") {
         if (Math.random() < menuEntry.chanceToSucceed) {
-          await animateText("You fled!")
+          await animateText(textFormat.green("You") + " fled!")
           process.exit(0)
         } else {
           await animateText("Couldn't flee.")
         }
       } else {
         await animateText(
-          gameState.me[0].type.name + " uses " + menuEntry.label + "."
+          textFormat.green(gameState.me[0].type.name) +
+            " uses " +
+            textFormat.blue(menuEntry.label) +
+            "."
         )
         await attack(menuEntry, gameState.me[0], gameState.enemy[0])
       }
@@ -148,9 +151,9 @@ export const round = async (menuEntry: Attack) => {
           Math.floor(Math.random() * gameState.enemy[0].attacks.length)
         ]
       await animateText(
-        gameState.enemy[0].type.name +
-          " (enemy) uses " +
-          enemyMenuEntry.label +
+        textFormat.red(gameState.enemy[0].type.name + " (enemy)") +
+          " uses " +
+          textFormat.blue(enemyMenuEntry.label) +
           "."
       )
       await attack(enemyMenuEntry, gameState.enemy[0], gameState.me[0])
@@ -187,23 +190,32 @@ function getActionOrder(
 
 const defeat = async (fighters: Array<Fighter>, isEnemy: boolean) => {
   await animateText(
-    `${fighters[0].type.name}${isEnemy ? " (enemy)" : ""} is defeated.`
+    `${(isEnemy ? textFormat.red : textFormat.green)(
+      `${fighters[0].type.name}${isEnemy ? " (enemy)" : ""}`
+    )} is defeated.`
   )
   if (fighters.every((fighter) => fighter.currentStats.life === 0)) {
     if (isEnemy) {
       await animateText(
-        "Enemy has no more fighters.\0\0\0\0\0\0\0\n" +
-          textFormat.green("You won!")
+        textFormat.red("Enemy") +
+          " has no more fighters.\0\0\0\0\0\0\0\n" +
+          textFormat.green("You") +
+          " won!"
       )
     } else {
       await animateText(
-        "You have no more fighters.\0\0\0\0\0\0\0\n" +
-          textFormat.red("Enemy won!")
+        textFormat.green("You") +
+          " have no more fighters.\0\0\0\0\0\0\0\n" +
+          textFormat.red("Enemy") +
+          " won!"
       )
     }
     process.exit(0)
   } else {
-    await animateText(fighters[1].type.name + " joins the fight.")
+    await animateText(
+      (isEnemy ? textFormat.red : textFormat.green)(fighters[1].type.name) +
+        " joins the fight."
+    )
     const defeatedFighter = fighters.shift()
     fighters.push(defeatedFighter)
   }
