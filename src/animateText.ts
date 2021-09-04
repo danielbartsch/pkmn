@@ -28,14 +28,23 @@ export const wrapText = (text: string, maxWidth: number): string => {
     const words = text.split(" ")
     const { current: wordsUnderMaxWidth, missing } = words.reduce(
       (acc, word) => {
-        if (textLength(acc.current.join(" ")) + textLength(word) < maxWidth) {
-          acc.current.push(word)
-        } else {
+        if (acc.nextLine) {
           acc.missing.push(word)
+        } else {
+          if (textLength(acc.current.join(" ")) + textLength(word) < maxWidth) {
+            acc.current.push(word)
+          } else {
+            acc.nextLine = true
+            acc.missing.push(word)
+          }
         }
         return acc
       },
-      { current: [] as Array<string>, missing: [] as Array<string> }
+      {
+        current: [] as Array<string>,
+        missing: [] as Array<string>,
+        nextLine: false,
+      }
     )
     return (
       wordsUnderMaxWidth.join(" ") +
