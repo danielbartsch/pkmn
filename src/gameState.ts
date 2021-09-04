@@ -32,6 +32,8 @@ type GameState = {
     textSpeed: number
   }
   menu: Array<Menu>
+  width: number
+  height: number
   log: Array<any>
 }
 
@@ -144,6 +146,8 @@ export const gameState: GameState = {
     textSpeed: 50, // one character every <this value> milliseconds
   },
   menu: [],
+  width: 10,
+  height: 10,
 
   log: [],
 }

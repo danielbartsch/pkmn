@@ -82,7 +82,8 @@ const renderTeamBar = (fighters: Array<Fighter>) => {
   )
 
   process.stdout.write(
-    leftPad(team.join(" ") + " ", WIDTH, fighters.length * 2 + 1) + "\n"
+    leftPad(team.join(" ") + " ", gameState.width, fighters.length * 2 + 1) +
+      "\n"
   )
 }
 
@@ -93,16 +94,14 @@ const leftPad = (string: string, pad: number, stringLength = string.length) => {
   return " ".repeat(pad - stringLength) + string
 }
 
-const WIDTH = 36
-const HEIGHT = 13
 const render = (menu: Array<Menu>, selected: number) => {
-  clear({ width: WIDTH, height: HEIGHT })
+  clear({ width: gameState.width, height: gameState.height })
   process.stdout.cursorTo(0, 0)
 
   renderTeamBar(gameState.enemy)
   renderNameBar(gameState.enemy[0], false)
   renderLifeBar({
-    width: WIDTH,
+    width: gameState.width,
     current: getInterpolatedLife(
       gameState.enemy[0].currentStats.life,
       gameState.enemy[0].lifeBarAnimation
@@ -123,7 +122,7 @@ const render = (menu: Array<Menu>, selected: number) => {
     `HP[${Math.ceil(meLifeInterpolated)}/${getStats(gameState.me[0]).life}]`
   )
   renderLifeBar({
-    width: WIDTH,
+    width: gameState.width,
     current: meLifeInterpolated,
     max: getStats(gameState.me[0]).life,
   })
@@ -146,8 +145,11 @@ const render = (menu: Array<Menu>, selected: number) => {
 }
 
 const run = async () => {
+  gameState.width = 36
+  gameState.height = 13
+
   clear({ width, height })
-  clear({ width: WIDTH + 1, height: HEIGHT + 1, char: "█" })
+  clear({ width: gameState.width + 1, height: gameState.height + 1, char: "█" })
   gameState.enemy.concat(gameState.me).forEach((player) => {
     player.currentStats = getStats(player)
   })
