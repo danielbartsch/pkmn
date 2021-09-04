@@ -151,7 +151,7 @@ export const round = async (menuEntry: Attack) => {
           Math.floor(Math.random() * gameState.enemy[0].attacks.length)
         ]
       await animateText(
-        textFormat.red(gameState.enemy[0].type.name + " (enemy)") +
+        textFormat.red(gameState.enemy[0].type.name) +
           " uses " +
           textFormat.blue(enemyMenuEntry.label) +
           "."
@@ -191,7 +191,7 @@ function getActionOrder(
 const defeat = async (fighters: Array<Fighter>, isEnemy: boolean) => {
   await animateText(
     `${(isEnemy ? textFormat.red : textFormat.green)(
-      `${fighters[0].type.name}${isEnemy ? " (enemy)" : ""}`
+      fighters[0].type.name
     )} is defeated.`
   )
   if (fighters.every((fighter) => fighter.currentStats.life === 0)) {

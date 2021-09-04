@@ -51,12 +51,12 @@ const getInterpolatedLife = (
 const renderStatusEffect = (name: string, severity: number) =>
   severity === 0 ? "" : name + (severity > 0 ? "+" + severity : severity)
 
-const renderNameBar = (fighter: Fighter, me: boolean, exactLife?: string) => {
+const renderNameBar = (fighter: Fighter, name: string, exactLife?: string) => {
   process.stdout.write(
     [
       "L[" + fighter.level + "]",
-      fighter.type.name,
-      me ? exactLife : "",
+      name,
+      exactLife,
       renderStatusEffect(
         "atk",
         sumStatusEffects(fighter.statusEffects, "attack")
@@ -99,14 +99,22 @@ const render = (menu: Array<Menu>, selected: number) => {
   clear({ width: gameState.width, height: gameState.height })
   process.stdout.cursorTo(0, 0)
 
+  const enemyLifeInterpolated = getInterpolatedLife(
+    gameState.enemy[0].currentStats.life,
+    gameState.enemy[0].lifeBarAnimation
+  )
+
   renderTeamBar(gameState.enemy)
-  renderNameBar(gameState.enemy[0], false)
+  renderNameBar(
+    gameState.enemy[0],
+    textFormat.red(gameState.enemy[0].type.name),
+    `HP[${Math.ceil(enemyLifeInterpolated)}/${
+      getStats(gameState.enemy[0]).life
+    }]`
+  )
   renderLifeBar({
     width: gameState.width,
-    current: getInterpolatedLife(
-      gameState.enemy[0].currentStats.life,
-      gameState.enemy[0].lifeBarAnimation
-    ),
+    current: enemyLifeInterpolated,
     max: getStats(gameState.enemy[0]).life,
   })
 
@@ -119,7 +127,7 @@ const render = (menu: Array<Menu>, selected: number) => {
   renderTeamBar(gameState.me)
   renderNameBar(
     gameState.me[0],
-    true,
+    textFormat.green(gameState.me[0].type.name),
     `HP[${Math.ceil(meLifeInterpolated)}/${getStats(gameState.me[0]).life}]`
   )
   renderLifeBar({
