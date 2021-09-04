@@ -67,7 +67,7 @@ const attack = async (menuEntry: Attack, actor: Fighter, target: Fighter) => {
       (actor.currentStats.attack * actorStatusEffects) /
       (target.currentStats.defense * targetStatusEffects)
 
-    target.currentStats.life -= Math.round(
+    target.currentStats.life -= Math.ceil(
       (isCritical ? 2 : 1) *
         menuEntry.damage *
         defenseAttackRelation *
