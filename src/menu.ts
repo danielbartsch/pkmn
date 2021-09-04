@@ -24,54 +24,11 @@ type MenuElement = {
 } & ({ type: "menu" | "setting" } | Attack | Info)
 export type Menu = [MenuElement, Array<Menu>] | MenuElement
 
-export const attacks: Array<Attack> = [
-  {
-    label: "Tackle",
-    key: "tackle",
-    type: "action",
-    damage: 5,
-    chanceToSucceed: 0.95,
-    chanceToCritical: 0.05,
-  },
-  {
-    label: "Harden",
-    key: "harden",
-    type: "action",
-    damage: 0,
-    chanceToSucceed: 1,
-    chanceToCritical: 0,
-    statusEffects: [{ target: "me", change: "defense", severity: 1 }],
-  },
-  /*{
-    label: "Growl",
-    key: "growl",
-    type: "action",
-    damage: 0,
-    chanceToSucceed: 1,
-    chanceToCritical: 0,
-    statusEffects: [{ target: "enemy", change: "attack", severity: -1 }],
-  },*/
-  {
-    label: "Dragon Dance",
-    key: "dragondance",
-    type: "action",
-    damage: 0,
-    chanceToSucceed: 1,
-    chanceToCritical: 0,
-    statusEffects: [{ target: "me", change: "speed", severity: 1 }],
-  },
-  {
-    label: "Crit",
-    key: "crit",
-    type: "action",
-    damage: 4.5,
-    chanceToSucceed: 0.85,
-    chanceToCritical: 0.4,
-  },
-]
-
-export const getMenu = (fighters: Array<Fighter>): Array<Menu> => [
-  [{ label: "Attack", key: "attack", type: "menu" }, attacks],
+export const getMenu = (
+  currentFighter: Fighter,
+  fighters: Array<Fighter>
+): Array<Menu> => [
+  [{ label: "Attack", key: "attack", type: "menu" }, currentFighter.attacks],
   [
     { label: "Inspect", key: "inspect", type: "menu" },
     fighters.map((fighter) => ({

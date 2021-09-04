@@ -1,6 +1,6 @@
 import { animateText } from "./animateText"
 import { gameState, Fighter, Status } from "./gameState"
-import { Attack, attacks } from "./menu"
+import { Attack } from "./menu"
 import * as textFormat from "./textFormat"
 import { sleep } from "./util"
 
@@ -117,7 +117,10 @@ export const round = async (menuEntry: Attack) => {
       }
     },
     enemyAction: async () => {
-      const enemyMenuEntry = attacks[Math.floor(Math.random() * attacks.length)]
+      const enemyMenuEntry =
+        gameState.enemy[0].attacks[
+          Math.floor(Math.random() * gameState.enemy[0].attacks.length)
+        ]
       await animateText(
         gameState.enemy[0].type.name +
           " (enemy) uses " +

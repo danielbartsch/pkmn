@@ -13,7 +13,7 @@ process.stdin.on("data", async function (key: string) {
   if (gameState.ownTurn) {
     const lastSelected = gameState.selected[gameState.selected.length - 1]
     const currentMenu = selectMenu(
-      getMenu(gameState.me.concat(gameState.enemy)),
+      getMenu(gameState.me[0], gameState.me.concat(gameState.enemy)),
       gameState.selected
     )
 

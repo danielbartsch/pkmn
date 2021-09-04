@@ -1,4 +1,6 @@
+import { attackTypes } from "./attackTypes"
 import { Stats, FighterType, fighterTypes } from "./fighterTypes"
+import { Attack } from "./menu"
 
 export type Status = {
   change: "attack" | "defense" | "speed"
@@ -10,6 +12,7 @@ export type Fighter = {
   level: number
   currentStats: Stats
   statusEffects: Array<Status>
+  attacks: [Attack, Attack, Attack, Attack]
   lifeBarAnimation: {
     startedAt: number | null
     from: number | null
@@ -50,6 +53,12 @@ export const gameState: GameState = {
         defense: 0,
         speed: 0,
       },
+      attacks: [
+        attackTypes.tackle,
+        attackTypes.dragonDance,
+        attackTypes.growl,
+        attackTypes.crit,
+      ],
       statusEffects: [],
       lifeBarAnimation: {
         startedAt: null,
@@ -66,6 +75,12 @@ export const gameState: GameState = {
         defense: 0,
         speed: 0,
       },
+      attacks: [
+        attackTypes.tackle,
+        attackTypes.dragonDance,
+        attackTypes.swordsDance,
+        attackTypes.crit,
+      ],
       statusEffects: [],
       lifeBarAnimation: {
         startedAt: null,
@@ -84,6 +99,12 @@ export const gameState: GameState = {
         defense: 0,
         speed: 0,
       },
+      attacks: [
+        attackTypes.tackle,
+        attackTypes.dragonDance,
+        attackTypes.growl,
+        attackTypes.harden,
+      ],
       statusEffects: [],
       lifeBarAnimation: {
         startedAt: null,
@@ -100,6 +121,12 @@ export const gameState: GameState = {
         defense: 0,
         speed: 0,
       },
+      attacks: [
+        attackTypes.tackle,
+        attackTypes.dragonDance,
+        attackTypes.growl,
+        attackTypes.crit,
+      ],
       statusEffects: [],
       lifeBarAnimation: {
         startedAt: null,

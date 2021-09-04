@@ -153,7 +153,7 @@ const run = async () => {
     player.currentStats = getStats(player)
   })
   while (true) {
-    const menu = getMenu(gameState.me.concat(gameState.enemy))
+    const menu = getMenu(gameState.me[0], gameState.me.concat(gameState.enemy))
     render(
       selectMenu(menu, gameState.selected),
       gameState.selected[gameState.selected.length - 1]
