@@ -4,7 +4,7 @@
   "description": "Create a PNG file that displays a graph",
   "main": "index.ts",
   "scripts": {
-    "start": "tsc src/index.ts && node src/index.js"
+    "start": "tsc && node build/index.js"
   },
   "author": "",
   "license": "ISC",
