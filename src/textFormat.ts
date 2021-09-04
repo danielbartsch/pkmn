@@ -1,48 +1,24 @@
 const RESET = "\x1b[0m"
 const getColorFormatter = (color: string) => (text: string) =>
   color + text + RESET
-const bold = getColorFormatter("\x1b[1m")
-const dim = getColorFormatter("\x1b[2m")
-const underline = getColorFormatter("\x1b[4m")
-const blink = getColorFormatter("\x1b[5m")
-const reverse = getColorFormatter("\x1b[7m")
-const hidden = getColorFormatter("\x1b[8m")
-const black = getColorFormatter("\x1b[30m")
-const red = getColorFormatter("\x1b[31m")
-const green = getColorFormatter("\x1b[32m")
-const yellow = getColorFormatter("\x1b[33m")
-const blue = getColorFormatter("\x1b[34m")
-const magenta = getColorFormatter("\x1b[35m")
-const cyan = getColorFormatter("\x1b[36m")
-const white = getColorFormatter("\x1b[37m")
-const bgBlack = getColorFormatter("\x1b[40m")
-const bgRed = getColorFormatter("\x1b[41m")
-const bgGreen = getColorFormatter("\x1b[42m")
-const bgYellow = getColorFormatter("\x1b[43m")
-const bgBlue = getColorFormatter("\x1b[44m")
-const bgMagenta = getColorFormatter("\x1b[45m")
-const bgCyan = getColorFormatter("\x1b[46m")
-
-export {
-  bold,
-  dim,
-  underline,
-  blink,
-  reverse,
-  hidden,
-  black,
-  red,
-  green,
-  yellow,
-  blue,
-  magenta,
-  cyan,
-  white,
-  bgBlack,
-  bgRed,
-  bgGreen,
-  bgYellow,
-  bgBlue,
-  bgMagenta,
-  bgCyan,
-}
+export const bold = getColorFormatter("\x1b[1m")
+export const dim = getColorFormatter("\x1b[2m")
+export const underline = getColorFormatter("\x1b[4m")
+export const blink = getColorFormatter("\x1b[5m")
+export const reverse = getColorFormatter("\x1b[7m")
+export const hidden = getColorFormatter("\x1b[8m")
+export const black = getColorFormatter("\x1b[30m")
+export const red = getColorFormatter("\x1b[31m")
+export const green = getColorFormatter("\x1b[32m")
+export const yellow = getColorFormatter("\x1b[33m")
+export const blue = getColorFormatter("\x1b[34m")
+export const magenta = getColorFormatter("\x1b[35m")
+export const cyan = getColorFormatter("\x1b[36m")
+export const white = getColorFormatter("\x1b[37m")
+export const bgBlack = getColorFormatter("\x1b[40m")
+export const bgRed = getColorFormatter("\x1b[41m")
+export const bgGreen = getColorFormatter("\x1b[42m")
+export const bgYellow = getColorFormatter("\x1b[43m")
+export const bgBlue = getColorFormatter("\x1b[44m")
+export const bgMagenta = getColorFormatter("\x1b[45m")
+export const bgCyan = getColorFormatter("\x1b[46m")
