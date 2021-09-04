@@ -12,8 +12,8 @@ export type Stats = {
 }
 
 export const fighterTypes = {
-  apedt: {
-    name: "Apedt",
+  attacker: {
+    name: "Attacker",
     baseStats: {
       life: 3,
       attack: 5,
@@ -21,8 +21,8 @@ export const fighterTypes = {
       speed: 2,
     },
   },
-  yogda: {
-    name: "Yogda",
+  defender: {
+    name: "Defender",
     baseStats: {
       life: 3,
       attack: 3,
@@ -30,8 +30,8 @@ export const fighterTypes = {
       speed: 2,
     },
   },
-  linvag: {
-    name: "Linvag",
+  weakDefender: {
+    name: "Weak Defender",
     baseStats: {
       life: 4,
       attack: 2,
@@ -39,8 +39,8 @@ export const fighterTypes = {
       speed: 3,
     },
   },
-  enbor: {
-    name: "Enbor",
+  strongAttacker: {
+    name: "Strong Attacker",
     baseStats: {
       life: 2,
       attack: 7,

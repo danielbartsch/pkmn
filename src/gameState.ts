@@ -42,7 +42,7 @@ export const getStats = (fighter: Fighter): Stats => ({
 export const gameState: GameState = {
   enemy: [
     {
-      type: fighterTypes.apedt,
+      type: fighterTypes.attacker,
       level: 5,
       currentStats: {
         life: 0,
@@ -58,7 +58,7 @@ export const gameState: GameState = {
       },
     },
     {
-      type: fighterTypes.enbor,
+      type: fighterTypes.strongAttacker,
       level: 5,
       currentStats: {
         life: 0,
@@ -76,7 +76,7 @@ export const gameState: GameState = {
   ],
   me: [
     {
-      type: fighterTypes.yogda,
+      type: fighterTypes.defender,
       level: 5,
       currentStats: {
         life: 0,
@@ -92,7 +92,7 @@ export const gameState: GameState = {
       },
     },
     {
-      type: fighterTypes.linvag,
+      type: fighterTypes.weakDefender,
       level: 5,
       currentStats: {
         life: 0,
