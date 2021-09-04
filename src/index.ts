@@ -152,10 +152,13 @@ const run = async () => {
   gameState.enemy.concat(gameState.me).forEach((player) => {
     player.currentStats = getStats(player)
   })
+  gameState.menu = getMenu(
+    gameState.me[0],
+    gameState.me.concat(gameState.enemy)
+  )
   while (true) {
-    const menu = getMenu(gameState.me[0], gameState.me.concat(gameState.enemy))
     render(
-      selectMenu(menu, gameState.selected),
+      selectMenu(gameState.menu, gameState.selected),
       gameState.selected[gameState.selected.length - 1]
     )
     await sleep(16)

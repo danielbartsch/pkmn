@@ -12,10 +12,7 @@ process.stdin.on("data", async function (key: string) {
   }
   if (gameState.ownTurn) {
     const lastSelected = gameState.selected[gameState.selected.length - 1]
-    const currentMenu = selectMenu(
-      getMenu(gameState.me[0], gameState.me.concat(gameState.enemy)),
-      gameState.selected
-    )
+    const currentMenu = selectMenu(gameState.menu, gameState.selected)
 
     switch (key) {
       case KEYS.right: {
@@ -75,6 +72,10 @@ process.stdin.on("data", async function (key: string) {
             case "menu":
           }
         }
+        gameState.menu = getMenu(
+          gameState.me[0],
+          gameState.me.concat(gameState.enemy)
+        )
         break
       }
     }

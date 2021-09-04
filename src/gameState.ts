@@ -1,6 +1,6 @@
 import { attackTypes } from "./attackTypes"
 import { Stats, FighterType, fighterTypes } from "./fighterTypes"
-import { Attack } from "./menu"
+import { Attack, Menu } from "./menu"
 
 export type Status = {
   change: "attack" | "defense" | "speed"
@@ -32,6 +32,7 @@ type GameState = {
     textSpeed: number
     textColor: "white" | "green" | "black" | "yellow"
   }
+  menu: Array<Menu>
   log: Array<any>
 }
 
@@ -144,6 +145,7 @@ export const gameState: GameState = {
     textSpeed: 50, // one character every <this value> milliseconds
     textColor: "white",
   },
+  menu: [],
 
   log: [],
 }
