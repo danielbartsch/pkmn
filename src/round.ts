@@ -35,6 +35,15 @@ export const sumStatusEffects = (
   return Math.abs(sum) > 6 ? (Math.max(-6, Math.min(6, sum)) as any) : sum
 }
 
+const statusEffectChangeLabel: Record<
+  Fighter["statusEffects"][0]["change"],
+  string
+> = {
+  attack: "Attack",
+  defense: "Defense",
+  speed: "Speed",
+}
+
 // variance = 0.1 --> returns between 0.95 and 1.05
 const variancePercent = (variance = 0.2) =>
   Math.random() * variance + (1 - variance / 2)
@@ -69,15 +78,30 @@ const attack = async (menuEntry: Attack, actor: Fighter, target: Fighter) => {
       target.currentStats.life = 0
     }
 
+    const statusEffectInfo: Array<string> = []
     menuEntry.statusEffects?.forEach(
       ({ change, severity, target: statusEffectTarget }) => {
         const fighter = statusEffectTarget === "enemy" ? target : actor
-        fighter.statusEffects.push({
-          change,
-          severity,
-        })
+        if (Math.abs(sumStatusEffects(fighter.statusEffects, change)) === 6) {
+          statusEffectInfo.push(
+            `${statusEffectChangeLabel[change]} of ${
+              fighter.type.name
+            } cannot be ${
+              severity < 0 ? "decreased" : "increased"
+            } any further.`
+          )
+        } else {
+          fighter.statusEffects.push({
+            change,
+            severity,
+          })
+        }
       }
     )
+
+    if (statusEffectInfo.length > 0) {
+      await animateText(statusEffectInfo.join("\n"))
+    }
 
     if (menuEntry.damage !== 0) {
       await sleep(target.lifeBarAnimation.duration)
