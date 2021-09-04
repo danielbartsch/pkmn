@@ -72,6 +72,18 @@ export const attacks: Array<Attack> = [
 
 export const getMenu = (fighters: Array<Fighter>): Array<Menu> => [
   [{ label: "Attack", key: "attack", type: "menu" }, attacks],
+  [
+    { label: "Inspect", key: "inspect", type: "menu" },
+    fighters.map((fighter) => ({
+      label: fighter.type.name,
+      key: fighter.type.name,
+      type: "info",
+      info: Object.keys(fighter.currentStats).map(
+        (key: keyof typeof fighter.currentStats) =>
+          rightPad(key, 7) + " " + fighter.currentStats[key]
+      ),
+    })),
+  ],
   {
     label: "Flee",
     key: "flee",
@@ -92,18 +104,6 @@ export const getMenu = (fighters: Array<Fighter>): Array<Menu> => [
         ],
       ],
     ],
-  ],
-  [
-    { label: "Inspect", key: "inspect", type: "menu" },
-    fighters.map((fighter) => ({
-      label: fighter.type.name,
-      key: fighter.type.name,
-      type: "info",
-      info: Object.keys(fighter.currentStats).map(
-        (key: keyof typeof fighter.currentStats) =>
-          rightPad(key, 7) + " " + fighter.currentStats[key]
-      ),
-    })),
   ],
 ]
 
