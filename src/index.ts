@@ -25,11 +25,10 @@ const renderTextAnimation = ({
   startedAt,
   text,
   textSpeed,
-  textColor,
 }: typeof gameState["textAnimation"]) => {
   if (startedAt) {
     const characterCount = (Date.now() - startedAt) / textSpeed
-    process.stdout.write(textFormat[textColor](text.slice(0, characterCount)))
+    process.stdout.write(text.slice(0, characterCount))
   }
 }
 

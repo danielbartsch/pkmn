@@ -30,7 +30,6 @@ type GameState = {
     startedAt: number | null
     text: string
     textSpeed: number
-    textColor: "white" | "green" | "black" | "yellow"
   }
   menu: Array<Menu>
   log: Array<any>
@@ -143,7 +142,6 @@ export const gameState: GameState = {
     startedAt: null,
     text: "",
     textSpeed: 50, // one character every <this value> milliseconds
-    textColor: "white",
   },
   menu: [],
 
