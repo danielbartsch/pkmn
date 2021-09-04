@@ -3,7 +3,9 @@ import { sleep } from "./util"
 
 const USER_READING_THRESHOLD = 400
 const getTextRenderTime = (textAnimation: typeof gameState["textAnimation"]) =>
-  textAnimation.text.length * textAnimation.textSpeed + USER_READING_THRESHOLD
+  textAnimation.text.replace(formattingRegex, "").length *
+    textAnimation.textSpeed +
+  USER_READING_THRESHOLD
 
 export const animateText = async (
   text: typeof gameState["textAnimation"]["text"],
@@ -55,6 +57,22 @@ export const wrapText = (text: string, maxWidth: number): string => {
   return text
 }
 
+const formattingRegex = /\x1b\[[0-9]+m/g
+
 // text length without unprinted characters like formatting sequences
 export const textLength = (text: string) =>
   text.replace(/(\0|\x1b\[[0-9]+m)/g, "").length
+
+// select text without formatting characters
+export const selectText = (text: string, index: number) => {
+  let usedIndex = index
+
+  let match
+  while ((match = formattingRegex.exec(text)) !== null) {
+    if (usedIndex >= match.index) {
+      usedIndex += match[0].length
+    }
+  }
+
+  return text.slice(0, usedIndex)
+}

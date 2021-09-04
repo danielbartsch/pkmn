@@ -6,6 +6,7 @@ import { sleep } from "./util"
 import { sumStatusEffects } from "./round"
 
 import "./input"
+import { selectText } from "./animateText"
 
 const { columns: width, rows: height } = process.stdout
 const clear = ({
@@ -28,7 +29,7 @@ const renderTextAnimation = ({
 }: typeof gameState["textAnimation"]) => {
   if (startedAt) {
     const characterCount = (Date.now() - startedAt) / textSpeed
-    process.stdout.write(text.slice(0, characterCount))
+    process.stdout.write(selectText(text, characterCount))
   }
 }
 

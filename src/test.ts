@@ -1,6 +1,6 @@
 //@ts-ignore
 import { test, assertEqual, run } from "@danielbartsch/testing"
-import { wrapText, textLength } from "./animateText"
+import { wrapText, textLength, selectText } from "./animateText"
 import * as textFormat from "./textFormat"
 
 test("text below maximum length", () => {
@@ -25,6 +25,26 @@ test("text length with unprinted characters such as \\0", () => {
 test("text length with formatting", () => {
   assertEqual(5, textLength(textFormat.red("hello")))
   assertEqual(5, textLength(textFormat.bold("hello")))
+})
+
+test("text selection normal", () => {
+  const text = "Hello"
+  assertEqual("", selectText(text, 0))
+  assertEqual("H", selectText(text, 1))
+  assertEqual("He", selectText(text, 2))
+  assertEqual("Hel", selectText(text, 3))
+  assertEqual("Hell", selectText(text, 4))
+  assertEqual("Hello", selectText(text, 5))
+})
+
+test("text selection formatting", () => {
+  const text = "He" + textFormat.red("ll") + "o"
+  assertEqual("", selectText(text, 0))
+  assertEqual("H", selectText(text, 1))
+  assertEqual("He\x1b[31m", selectText(text, 2))
+  assertEqual("He\x1b[31ml", selectText(text, 3))
+  assertEqual("He" + textFormat.red("ll"), selectText(text, 4))
+  assertEqual(text, selectText(text, 5))
 })
 
 run()
