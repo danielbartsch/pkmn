@@ -1,4 +1,5 @@
-import { Fighter, Status } from "./gameState"
+import { wrapText } from "./animateText"
+import { Fighter, gameState, Status } from "./gameState"
 import * as textFormat from "./textFormat"
 
 export type Attack = {
@@ -68,20 +69,23 @@ const selectedMenu = (string: string) =>
   textFormat.green(">" + textFormat.underline(string))
 const selectableMenu = (string: string) => textFormat.white(" " + string)
 export const renderMenu = (menu: Array<Menu>, selected: number) => {
-  process.stdout.write(
+  const renderedMenu = wrapText(
     menu
       .map((name, index) => {
         const format = index === selected ? selectedMenu : selectableMenu
         return format(Array.isArray(name) ? name[0].label : name.label)
       })
-      .join(" ")
+      .join(" "),
+    gameState.width
   )
+
+  process.stdout.write(renderedMenu + (renderedMenu.includes("\n") ? "" : "\n"))
 
   const currentMenu = menu[selected]
   if (!Array.isArray(currentMenu)) {
     if (currentMenu.key !== "flee" && currentMenu.type === "action") {
       process.stdout.write(
-        "\n\n Damage   " +
+        "\n Damage   " +
           currentMenu.damage +
           "\n Accuracy " +
           currentMenu.chanceToSucceed * 100 +
@@ -89,7 +93,7 @@ export const renderMenu = (menu: Array<Menu>, selected: number) => {
       )
     } else if (currentMenu.type === "info") {
       process.stdout.write(
-        "\n\n" +
+        "\n" +
           group(currentMenu.info, 2)
             .map((group) =>
               group.map((stat) => rightPad(upperFirst(stat), 10)).join(" | ")
