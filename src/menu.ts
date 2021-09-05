@@ -68,7 +68,7 @@ export const getMenu = (
 const selectedMenu = (string: string) =>
   textFormat.green(">" + textFormat.underline(string))
 const selectableMenu = (string: string) => textFormat.white(" " + string)
-export const renderMenu = (menu: Array<Menu>, selected: number) => {
+export const getMenuRender = (menu: Array<Menu>, selected: number) => {
   const renderedMenu = wrapText(
     menu
       .map((name, index) => {
@@ -79,29 +79,31 @@ export const renderMenu = (menu: Array<Menu>, selected: number) => {
     gameState.width
   )
 
-  process.stdout.write(renderedMenu + (renderedMenu.includes("\n") ? "" : "\n"))
+  const verticalClearance = renderedMenu.includes("\n") ? "" : "\n"
 
   const currentMenu = menu[selected]
+
+  let info = ""
   if (!Array.isArray(currentMenu)) {
     if (currentMenu.key !== "flee" && currentMenu.type === "action") {
-      process.stdout.write(
+      info =
         "\n Damage   " +
-          currentMenu.damage +
-          "\n Accuracy " +
-          currentMenu.chanceToSucceed * 100 +
-          "%\n"
-      )
+        currentMenu.damage +
+        "\n Accuracy " +
+        currentMenu.chanceToSucceed * 100 +
+        "%\n"
     } else if (currentMenu.type === "info") {
-      process.stdout.write(
+      info =
         "\n" +
-          group(currentMenu.info, 2)
-            .map((group) =>
-              group.map((stat) => rightPad(upperFirst(stat), 10)).join(" | ")
-            )
-            .join("\n")
-      )
+        group(currentMenu.info, 2)
+          .map((group) =>
+            group.map((stat) => rightPad(upperFirst(stat), 10)).join(" | ")
+          )
+          .join("\n")
     }
   }
+
+  return renderedMenu + verticalClearance + info
 }
 
 const rightPad = (string: string, pad: number) => {

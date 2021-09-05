@@ -1,6 +1,6 @@
 import * as textFormat from "./textFormat"
 
-export const renderLifeBar = ({
+export const getLifeBarRender = ({
   width,
   current,
   max,
@@ -18,7 +18,7 @@ export const renderLifeBar = ({
       ? textFormat.yellow
       : textFormat.green
 
-  process.stdout.write(
+  return (
     (current === 0
       ? textFormat.bgRed(textFormat.black(textFormat.bold(" D E F E A T E D ")))
       : format(

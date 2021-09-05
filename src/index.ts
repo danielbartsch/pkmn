@@ -1,6 +1,6 @@
 import * as textFormat from "./textFormat"
-import { Menu, renderMenu, selectMenu, getMenu } from "./menu"
-import { renderLifeBar } from "./lifeBar"
+import { Menu, getMenuRender, selectMenu, getMenu } from "./menu"
+import { getLifeBarRender } from "./lifeBar"
 import { gameState, getStats, Fighter } from "./gameState"
 import { sleep } from "./util"
 import { sumStatusEffects } from "./round"
@@ -22,15 +22,16 @@ const clear = ({
   process.stdout.write((char.repeat(width) + "\n").repeat(height - 1))
 }
 
-const renderTextAnimation = ({
+const getTextAnimationRender = ({
   startedAt,
   text,
   textSpeed,
 }: typeof gameState["textAnimation"]) => {
   if (startedAt) {
     const characterCount = (Date.now() - startedAt) / textSpeed
-    process.stdout.write(selectText(text, characterCount))
+    return selectText(text, characterCount)
   }
+  return ""
 }
 
 const getInterpolatedLife = (
@@ -51,40 +52,34 @@ const getInterpolatedLife = (
 const renderStatusEffect = (name: string, severity: number) =>
   severity === 0 ? "" : name + (severity > 0 ? "+" + severity : severity)
 
-const renderNameBar = (fighter: Fighter, name: string, exactLife?: string) => {
-  process.stdout.write(
-    [
-      "L[" + fighter.level + "]",
-      name,
-      exactLife,
-      renderStatusEffect(
-        "atk",
-        sumStatusEffects(fighter.statusEffects, "attack")
-      ),
-      renderStatusEffect(
-        "def",
-        sumStatusEffects(fighter.statusEffects, "defense")
-      ),
-      renderStatusEffect(
-        "spd",
-        sumStatusEffects(fighter.statusEffects, "speed")
-      ),
-    ]
-      .filter((element) => element)
-      .join(" ") + "\n"
-  )
-}
+const getNameBarRender = (fighter: Fighter, name: string, exactLife?: string) =>
+  [
+    "L[" + fighter.level + "]",
+    name,
+    exactLife,
+    renderStatusEffect(
+      "atk",
+      sumStatusEffects(fighter.statusEffects, "attack")
+    ),
+    renderStatusEffect(
+      "def",
+      sumStatusEffects(fighter.statusEffects, "defense")
+    ),
+    renderStatusEffect("spd", sumStatusEffects(fighter.statusEffects, "speed")),
+  ]
+    .filter((element) => element)
+    .join(" ") + "\n"
 
-const renderTeamBar = (fighters: Array<Fighter>) => {
+const getTeamBarRender = (fighters: Array<Fighter>) => {
   const team = fighters.map((fighter) =>
     fighter.currentStats.life === 0
       ? textFormat.red("○")
       : textFormat.green("◍")
   )
 
-  process.stdout.write(
+  return (
     leftPad(team.join(" ") + " ", gameState.width, fighters.length * 2 + 1) +
-      "\n"
+    "\n"
   )
 }
 
@@ -104,19 +99,23 @@ const render = (menu: Array<Menu>, selected: number) => {
     gameState.enemy[0].lifeBarAnimation
   )
 
-  renderTeamBar(gameState.enemy)
-  renderNameBar(
-    gameState.enemy[0],
-    textFormat.red(gameState.enemy[0].type.name),
-    `HP[${Math.ceil(enemyLifeInterpolated)}/${
-      getStats(gameState.enemy[0]).life
-    }]`
+  process.stdout.write(getTeamBarRender(gameState.enemy))
+  process.stdout.write(
+    getNameBarRender(
+      gameState.enemy[0],
+      textFormat.red(gameState.enemy[0].type.name),
+      `HP[${Math.ceil(enemyLifeInterpolated)}/${
+        getStats(gameState.enemy[0]).life
+      }]`
+    )
   )
-  renderLifeBar({
-    width: gameState.width,
-    current: enemyLifeInterpolated,
-    max: getStats(gameState.enemy[0]).life,
-  })
+  process.stdout.write(
+    getLifeBarRender({
+      width: gameState.width,
+      current: enemyLifeInterpolated,
+      max: getStats(gameState.enemy[0]).life,
+    })
+  )
 
   const meLifeInterpolated = getInterpolatedLife(
     gameState.me[0].currentStats.life,
@@ -124,23 +123,27 @@ const render = (menu: Array<Menu>, selected: number) => {
   )
 
   process.stdout.write("\n")
-  renderTeamBar(gameState.me)
-  renderNameBar(
-    gameState.me[0],
-    textFormat.green(gameState.me[0].type.name),
-    `HP[${Math.ceil(meLifeInterpolated)}/${getStats(gameState.me[0]).life}]`
+  process.stdout.write(getTeamBarRender(gameState.me))
+  process.stdout.write(
+    getNameBarRender(
+      gameState.me[0],
+      textFormat.green(gameState.me[0].type.name),
+      `HP[${Math.ceil(meLifeInterpolated)}/${getStats(gameState.me[0]).life}]`
+    )
   )
-  renderLifeBar({
-    width: gameState.width,
-    current: meLifeInterpolated,
-    max: getStats(gameState.me[0]).life,
-  })
+  process.stdout.write(
+    getLifeBarRender({
+      width: gameState.width,
+      current: meLifeInterpolated,
+      max: getStats(gameState.me[0]).life,
+    })
+  )
   process.stdout.write("\n")
 
   if (gameState.ownTurn) {
-    renderMenu(menu, selected)
+    process.stdout.write(getMenuRender(menu, selected))
   } else {
-    renderTextAnimation(gameState.textAnimation)
+    process.stdout.write(getTextAnimationRender(gameState.textAnimation))
   }
 
   if (gameState.log.length > 0) {
