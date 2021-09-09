@@ -2,6 +2,7 @@ import { animateText } from "./animateText"
 import { gameState, Fighter, Status } from "./gameState"
 import { Attack } from "./menu"
 import { formatFractional } from "./render"
+import { saveFighters } from "./save"
 import * as textFormat from "./textFormat"
 import { sleep } from "./util"
 
@@ -246,6 +247,7 @@ const defeat = async (
           " won!"
       )
     }
+    await saveFighters()
     process.exit(0)
   } else {
     await animateText(
@@ -253,5 +255,6 @@ const defeat = async (
     )
     const defeatedFighter = fighters.shift()
     fighters.push(defeatedFighter)
+    await saveFighters()
   }
 }
