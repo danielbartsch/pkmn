@@ -135,6 +135,7 @@ const render = (menu: Array<Menu>, selected: number) => {
 
   process.stdout.cursorTo(0, 0)
   process.stdout.write(frame)
+  process.stdout.cursorTo(process.stdout.columns - 1, process.stdout.rows - 1)
 }
 
 const run = async () => {
