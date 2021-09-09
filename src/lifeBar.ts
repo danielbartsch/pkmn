@@ -18,16 +18,14 @@ export const getLifeBarRender = ({
       ? textFormat.yellow
       : textFormat.green
 
-  return (
-    (current === 0
-      ? textFormat.bgRed(textFormat.black(textFormat.bold(" D E F E A T E D ")))
-      : format(
-          "█".repeat(Math.floor(lifeRemainingRelative)) +
-            getFractionLifeBar(
-              Math.ceil(lifeRemainingRelative) - lifeRemainingRelative
-            )
-        )) + "\n"
-  )
+  return current === 0
+    ? textFormat.bgRed(textFormat.black(textFormat.bold(" D E F E A T E D ")))
+    : format(
+        "█".repeat(Math.floor(lifeRemainingRelative)) +
+          getFractionLifeBar(
+            Math.ceil(lifeRemainingRelative) - lifeRemainingRelative
+          )
+      )
 }
 
 const getFractionLifeBar = (fraction: number) => {

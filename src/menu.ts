@@ -1,6 +1,7 @@
 import { wrapText } from "./animateText"
 import { Fighter, gameState, Status } from "./gameState"
 import * as textFormat from "./textFormat"
+import { rightPad } from "./util"
 
 export type Attack = {
   label: string
@@ -91,7 +92,7 @@ export const getMenuRender = (menu: Array<Menu>, selected: number) => {
         currentMenu.damage +
         "\n Accuracy " +
         currentMenu.chanceToSucceed * 100 +
-        "%\n"
+        "%"
     } else if (currentMenu.type === "info") {
       info =
         "\n" +
@@ -104,13 +105,6 @@ export const getMenuRender = (menu: Array<Menu>, selected: number) => {
   }
 
   return renderedMenu + verticalClearance + info
-}
-
-const rightPad = (string: string, pad: number) => {
-  if (string.length > pad) {
-    return string
-  }
-  return string + " ".repeat(pad - string.length)
 }
 
 const upperFirst = (string: string) =>

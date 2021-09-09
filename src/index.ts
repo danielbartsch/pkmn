@@ -2,25 +2,16 @@ import * as textFormat from "./textFormat"
 import { Menu, getMenuRender, selectMenu, getMenu } from "./menu"
 import { getLifeBarRender } from "./lifeBar"
 import { gameState, getStats, Fighter } from "./gameState"
-import { sleep } from "./util"
+import { leftPad, rightPad, sleep } from "./util"
 import { sumStatusEffects } from "./round"
 
 import "./input"
 import { selectText } from "./animateText"
 
-const { columns: width, rows: height } = process.stdout
-const clear = ({
-  width,
-  height,
-  char = " ",
-}: {
-  width: number
-  height: number
-  char?: string
-}) => {
-  process.stdout.cursorTo(0, 0)
-  process.stdout.write((char.repeat(width) + "\n").repeat(height - 1))
-}
+const getClearRender = ({ height, width }: { height: number; width: number }) =>
+  Array.from({ length: height })
+    .map(() => rightPad("", width))
+    .join("\n")
 
 const getTextAnimationRender = ({
   startedAt,
@@ -68,95 +59,101 @@ const getNameBarRender = (fighter: Fighter, name: string, exactLife?: string) =>
     renderStatusEffect("spd", sumStatusEffects(fighter.statusEffects, "speed")),
   ]
     .filter((element) => element)
-    .join(" ") + "\n"
+    .join(" ")
 
-const getTeamBarRender = (fighters: Array<Fighter>) => {
-  const team = fighters.map((fighter) =>
-    fighter.currentStats.life === 0
-      ? textFormat.red("○")
-      : textFormat.green("◍")
+const getTeamBarRender = (fighters: Array<Fighter>) =>
+  leftPad(
+    fighters
+      .map((fighter) =>
+        fighter.currentStats.life === 0
+          ? textFormat.red("○")
+          : textFormat.green("◍")
+      )
+      .join(" ") + " ",
+    gameState.width
   )
-
-  return (
-    leftPad(team.join(" ") + " ", gameState.width, fighters.length * 2 + 1) +
-    "\n"
-  )
-}
-
-const leftPad = (string: string, pad: number, stringLength = string.length) => {
-  if (stringLength > pad) {
-    return string
-  }
-  return " ".repeat(pad - stringLength) + string
-}
 
 const render = (menu: Array<Menu>, selected: number) => {
-  clear({ width: gameState.width, height: gameState.height })
-  process.stdout.cursorTo(0, 0)
-
   const enemyLifeInterpolated = getInterpolatedLife(
     gameState.enemy[0].currentStats.life,
     gameState.enemy[0].lifeBarAnimation
   )
-
   const meLifeInterpolated = getInterpolatedLife(
     gameState.me[0].currentStats.life,
     gameState.me[0].lifeBarAnimation
   )
+  const lines = [
+    getTeamBarRender(gameState.enemy),
+    "\n",
+    getNameBarRender(
+      gameState.enemy[0],
+      textFormat.red(gameState.enemy[0].type.name),
+      `HP[${Math.ceil(enemyLifeInterpolated)}/${
+        getStats(gameState.enemy[0]).life
+      }]`
+    ),
+    "\n",
+    getLifeBarRender({
+      width: gameState.width,
+      current: enemyLifeInterpolated,
+      max: getStats(gameState.enemy[0]).life,
+    }),
+    "\n\n",
+    getTeamBarRender(gameState.me),
+    "\n",
+    getNameBarRender(
+      gameState.me[0],
+      textFormat.green(gameState.me[0].type.name),
+      `HP[${Math.ceil(meLifeInterpolated)}/${getStats(gameState.me[0]).life}]`
+    ),
+    "\n",
+    getLifeBarRender({
+      width: gameState.width,
+      current: meLifeInterpolated,
+      max: getStats(gameState.me[0]).life,
+    }),
+    "\n\n",
+    gameState.ownTurn
+      ? getMenuRender(menu, selected)
+      : getTextAnimationRender(gameState.textAnimation),
+    gameState.log.length > 0
+      ? "\n\n--- LOG ----------------------\n" +
+        gameState.log
+          .map((obj) => (obj === "\n" ? obj : JSON.stringify(obj)))
+          .join(" ")
+      : "",
+  ]
+    .join("")
+    .split("\n")
 
-  process.stdout.write(
-    [
-      getTeamBarRender(gameState.enemy),
-      getNameBarRender(
-        gameState.enemy[0],
-        textFormat.red(gameState.enemy[0].type.name),
-        `HP[${Math.ceil(enemyLifeInterpolated)}/${
-          getStats(gameState.enemy[0]).life
-        }]`
-      ),
-      getLifeBarRender({
-        width: gameState.width,
-        current: enemyLifeInterpolated,
-        max: getStats(gameState.enemy[0]).life,
-      }),
-      "\n",
-      getTeamBarRender(gameState.me),
-      getNameBarRender(
-        gameState.me[0],
-        textFormat.green(gameState.me[0].type.name),
-        `HP[${Math.ceil(meLifeInterpolated)}/${getStats(gameState.me[0]).life}]`
-      ),
-      getLifeBarRender({
-        width: gameState.width,
-        current: meLifeInterpolated,
-        max: getStats(gameState.me[0]).life,
-      }),
-      "\n",
-      gameState.ownTurn
-        ? getMenuRender(menu, selected)
-        : getTextAnimationRender(gameState.textAnimation),
-      gameState.log.length > 0
-        ? "\n\n--- LOG ----------------------\n" +
-          gameState.log
-            .map((obj) => (obj === "\n" ? obj : JSON.stringify(obj)))
-            .join(" ")
-        : "",
-    ].join("")
-  )
+  const frame = lines
+    .concat(
+      Array.from({ length: gameState.height - lines.length }).map(() => "")
+    )
+    .map((line) => rightPad(line, gameState.width) + "\n")
+    .join("")
+
+  process.stdout.cursorTo(0, 0)
+  process.stdout.write(frame)
 }
 
 const run = async () => {
   gameState.width = 36
   gameState.height = 13
 
-  clear({ width, height })
-  clear({ width: gameState.width + 1, height: gameState.height + 1, char: "█" })
   gameState.enemy.concat(gameState.me).forEach((player) => {
     player.currentStats = getStats(player)
   })
   gameState.menu = getMenu(
     gameState.me[0],
     gameState.me.concat(gameState.enemy)
+  )
+
+  process.stdout.write(
+    getClearRender({
+      height: process.stdout.rows,
+      width: process.stdout.columns,
+    })
   )
   while (true) {
     render(
