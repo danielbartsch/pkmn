@@ -67,7 +67,7 @@ export const getMenu = (
 
 const selectedMenu = (string: string) =>
   textFormat.green(">" + textFormat.underline(string))
-const selectableMenu = (string: string) => textFormat.white(" " + string)
+const selectableMenu = (string: string) => " " + string
 export const getMenuRender = (menu: Array<Menu>, selected: number) => {
   const renderedMenu = wrapText(
     menu
