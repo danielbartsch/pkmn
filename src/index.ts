@@ -20,7 +20,7 @@ const getTextAnimationRender = ({
 }: typeof gameState["textAnimation"]) => {
   if (startedAt) {
     const characterCount = (Date.now() - startedAt) / textSpeed
-    return selectText(text, characterCount)
+    return selectText(text, characterCount) + "▎"
   }
   return ""
 }
