@@ -1,5 +1,5 @@
 import { gameState } from "./gameState"
-import { getMenu, selectMenu } from "./menu"
+import { selectMenu, updateFightersData } from "./menu"
 import { round } from "./round"
 
 process.stdin.setRawMode(true)
@@ -72,10 +72,7 @@ process.stdin.on("data", async function (key: string) {
             case "menu":
           }
         }
-        gameState.menu = getMenu(
-          gameState.me[0],
-          gameState.me.concat(gameState.enemy)
-        )
+        updateFightersData({ restartLife: false })
         break
       }
     }

@@ -1,6 +1,7 @@
 //@ts-ignore
 import { test, assertEqual, run } from "@danielbartsch/testing"
 import { wrapText, textLength, selectText } from "./animateText"
+import { formatFractional } from "./render"
 import * as textFormat from "./textFormat"
 
 test("don't wrap text below maximum length", () => {
@@ -52,6 +53,15 @@ test("text selection formatting", () => {
   assertEqual("He\x1b[31ml", selectText(text, 3))
   assertEqual("He" + textFormat.red("ll"), selectText(text, 4))
   assertEqual(text, selectText(text, 5))
+})
+
+test("formatFractional significant", () => {
+  assertEqual(formatFractional(1.01, 2), "1.01")
+  assertEqual(formatFractional(2, 2), "2")
+  assertEqual(formatFractional(3.01, 1), "3")
+  assertEqual(formatFractional(4.07, 1), "4")
+  assertEqual(formatFractional(5.99, 1), "5.9")
+  assertEqual(formatFractional(6.205, 2), "6.2")
 })
 
 run()

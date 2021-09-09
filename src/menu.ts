@@ -1,4 +1,5 @@
-import { Fighter, Status } from "./gameState"
+import { Fighter, gameState, getStats, Status } from "./gameState"
+import { formatFractional } from "./render"
 import { rightPad } from "./util"
 
 export type Attack = {
@@ -24,7 +25,7 @@ type MenuElement = {
 } & ({ type: "menu" | "setting" } | Attack | Info)
 export type Menu = [MenuElement, Array<Menu>] | MenuElement
 
-export const getMenu = (
+const getMenu = (
   currentFighter: Fighter,
   fighters: Array<Fighter>
 ): Array<Menu> => [
@@ -37,7 +38,9 @@ export const getMenu = (
       type: "info",
       info: Object.keys(fighter.currentStats).map(
         (key: keyof typeof fighter.currentStats) =>
-          rightPad(key, 7) + " " + fighter.currentStats[key]
+          rightPad(key, 7) +
+          " " +
+          formatFractional(fighter.currentStats[key], 1)
       ),
     })),
   ],
@@ -72,3 +75,19 @@ export const selectMenu = (
     const nextMenu = acc[selectedIndex]
     return Array.isArray(nextMenu) ? nextMenu[1] : nextMenu
   }, menu) as any
+
+export const updateFightersData = ({
+  restartLife,
+}: {
+  restartLife: boolean
+}) => {
+  gameState.enemy.concat(gameState.me).forEach((player) => {
+    const life = player.currentStats.life
+    player.currentStats = getStats(player)
+    if (!restartLife) player.currentStats.life = life
+  })
+  gameState.menu = getMenu(
+    gameState.me[0],
+    gameState.me.concat(gameState.enemy)
+  )
+}

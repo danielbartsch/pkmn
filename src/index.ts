@@ -1,5 +1,5 @@
-import { selectMenu, getMenu } from "./menu"
-import { gameState, getStats } from "./gameState"
+import { selectMenu, updateFightersData } from "./menu"
+import { gameState } from "./gameState"
 import { sleep } from "./util"
 import { getClearRender, render } from "./render"
 import "./input"
@@ -8,13 +8,7 @@ const run = async () => {
   gameState.width = 36
   gameState.height = 13
 
-  gameState.enemy.concat(gameState.me).forEach((player) => {
-    player.currentStats = getStats(player)
-  })
-  gameState.menu = getMenu(
-    gameState.me[0],
-    gameState.me.concat(gameState.enemy)
-  )
+  updateFightersData({ restartLife: true })
 
   process.stdout.write(
     getClearRender({

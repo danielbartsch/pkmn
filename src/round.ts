@@ -1,6 +1,7 @@
 import { animateText } from "./animateText"
 import { gameState, Fighter, Status } from "./gameState"
 import { Attack } from "./menu"
+import { formatFractional } from "./render"
 import * as textFormat from "./textFormat"
 import { sleep } from "./util"
 
@@ -140,7 +141,17 @@ export const round = async (menuEntry: Attack) => {
 
       if (gameState.enemy[0].currentStats.life <= 0) {
         gameState.ownTurn = false
-        await defeat(gameState.enemy, true)
+        const fractionalLevelIncrease = getFractionLevelIncrease(
+          gameState.me[0],
+          gameState.enemy[0]
+        )
+        gameState.me[0].level += fractionalLevelIncrease
+        await defeat(
+          gameState.me[0],
+          gameState.enemy,
+          fractionalLevelIncrease,
+          true
+        )
         return "defeat"
       }
       return "no defeat"
@@ -159,7 +170,17 @@ export const round = async (menuEntry: Attack) => {
       await attack(enemyMenuEntry, gameState.enemy[0], gameState.me[0])
 
       if (gameState.me[0].currentStats.life <= 0) {
-        await defeat(gameState.me, false)
+        const fractionalLevelIncrease = getFractionLevelIncrease(
+          gameState.enemy[0],
+          gameState.me[0]
+        )
+        gameState.enemy[0].level += fractionalLevelIncrease
+        await defeat(
+          gameState.enemy[0],
+          gameState.me,
+          fractionalLevelIncrease,
+          false
+        )
         return "defeat"
       }
       return "no defeat"
@@ -178,6 +199,11 @@ export const round = async (menuEntry: Attack) => {
   gameState.ownTurn = true
 }
 
+const getFractionLevelIncrease = (
+  defeater: Fighter,
+  defeated: Fighter
+): number => defeated.level / defeater.level / 5
+
 function getActionOrder(
   meSpeed: number,
   enemySpeed: number
@@ -188,11 +214,21 @@ function getActionOrder(
   else return ["enemyAction", "meAction"]
 }
 
-const defeat = async (fighters: Array<Fighter>, isEnemy: boolean) => {
+const defeat = async (
+  defeater: Fighter,
+  fighters: Array<Fighter>,
+  fractionalLevelIncrease: number,
+  isEnemy: boolean
+) => {
+  const defeatedTextFormat = isEnemy ? textFormat.red : textFormat.green
+  const defeaterTextFormat = isEnemy ? textFormat.green : textFormat.red
+
+  await animateText(`${defeatedTextFormat(fighters[0].type.name)} is defeated.`)
   await animateText(
-    `${(isEnemy ? textFormat.red : textFormat.green)(
-      fighters[0].type.name
-    )} is defeated.`
+    `${defeaterTextFormat(defeater.type.name)} levels up ${formatFractional(
+      fractionalLevelIncrease,
+      2
+    )}`
   )
   if (fighters.every((fighter) => fighter.currentStats.life === 0)) {
     if (isEnemy) {
@@ -213,8 +249,7 @@ const defeat = async (fighters: Array<Fighter>, isEnemy: boolean) => {
     process.exit(0)
   } else {
     await animateText(
-      (isEnemy ? textFormat.red : textFormat.green)(fighters[1].type.name) +
-        " joins the fight."
+      defeatedTextFormat(fighters[1].type.name) + " joins the fight."
     )
     const defeatedFighter = fighters.shift()
     fighters.push(defeatedFighter)

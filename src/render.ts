@@ -31,9 +31,10 @@ export const render = (menu: Array<Menu>, selected: number) => {
     getNameBarRender(
       gameState.enemy[0],
       textFormat.red(gameState.enemy[0].type.name),
-      `HP[${Math.ceil(enemyLifeInterpolated)}/${
-        getStats(gameState.enemy[0]).life
-      }]`
+      `HP[${formatFractional(enemyLifeInterpolated, 1)}/${formatFractional(
+        getStats(gameState.enemy[0]).life,
+        1
+      )}]`
     ),
     "\n",
     getLifeBarRender({
@@ -47,7 +48,10 @@ export const render = (menu: Array<Menu>, selected: number) => {
     getNameBarRender(
       gameState.me[0],
       textFormat.green(gameState.me[0].type.name),
-      `HP[${Math.ceil(meLifeInterpolated)}/${getStats(gameState.me[0]).life}]`
+      `HP[${formatFractional(meLifeInterpolated, 1)}/${formatFractional(
+        getStats(gameState.me[0]).life,
+        1
+      )}]`
     ),
     "\n",
     getLifeBarRender({
@@ -110,7 +114,7 @@ const getTeamBarRender = (fighters: Array<Fighter>) =>
 
 const getNameBarRender = (fighter: Fighter, name: string, exactLife?: string) =>
   [
-    "L[" + fighter.level + "]",
+    "L[" + formatFractional(fighter.level, 1) + "]",
     name,
     exactLife,
     renderStatusEffect(
@@ -236,4 +240,38 @@ const getTextAnimationRender = ({
     return selectText(text, characterCount) + "▎"
   }
   return ""
+}
+
+export const formatFractional = (number: number, digits: number) => {
+  const [integers, fractionals] = String(number).split(".")
+  if (!fractionals) return String(number)
+
+  const significantFractionals = ignoreTrailingZeros(
+    fractionals.slice(0, digits)
+  )
+
+  return significantFractionals.split("").every((digit) => digit === "0")
+    ? integers
+    : [integers, significantFractionals].join(".")
+}
+
+const ignoreTrailingZeros = (string: string) => {
+  let reverseResult = ""
+  for (let index = string.length - 1; index >= 0; index--) {
+    if (string[index] === "0" && reverseResult) {
+      reverseResult += string[index]
+    } else if (string[index] !== "0") {
+      reverseResult += string[index]
+    }
+  }
+
+  return reverse(reverseResult)
+}
+
+const reverse = (string: string): string => {
+  let result = ""
+  for (let index = string.length - 1; index >= 0; index--) {
+    result += string[index]
+  }
+  return result
 }
