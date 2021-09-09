@@ -1,6 +1,4 @@
-import { wrapText } from "./animateText"
-import { Fighter, gameState, Status } from "./gameState"
-import * as textFormat from "./textFormat"
+import { Fighter, Status } from "./gameState"
 import { rightPad } from "./util"
 
 export type Attack = {
@@ -65,63 +63,6 @@ export const getMenu = (
     ],
   ],
 ]
-
-const selectedMenu = (string: string) =>
-  textFormat.green(">" + textFormat.underline(string))
-const selectableMenu = (string: string) => " " + string
-export const getMenuRender = (menu: Array<Menu>, selected: number) => {
-  const renderedMenu = wrapText(
-    menu
-      .map((name, index) => {
-        const format = index === selected ? selectedMenu : selectableMenu
-        return format(Array.isArray(name) ? name[0].label : name.label)
-      })
-      .join(" "),
-    gameState.width
-  )
-
-  const verticalClearance = renderedMenu.includes("\n") ? "" : "\n"
-
-  const currentMenu = menu[selected]
-
-  let info = ""
-  if (!Array.isArray(currentMenu)) {
-    if (currentMenu.key !== "flee" && currentMenu.type === "action") {
-      info =
-        "\n Damage   " +
-        currentMenu.damage +
-        "\n Accuracy " +
-        currentMenu.chanceToSucceed * 100 +
-        "%"
-    } else if (currentMenu.type === "info") {
-      info =
-        "\n" +
-        group(currentMenu.info, 2)
-          .map((group) =>
-            group.map((stat) => rightPad(upperFirst(stat), 10)).join(" | ")
-          )
-          .join("\n")
-    }
-  }
-
-  return renderedMenu + verticalClearance + info
-}
-
-const upperFirst = (string: string) =>
-  string[0].toLocaleUpperCase() + string.slice(1)
-
-const group = <T>(array: Array<T>, size: number): Array<Array<T>> => {
-  let currentSize = size
-  let index = 0
-  return array.reduce((acc, current) => {
-    acc[index] = (acc[index] ?? []).concat([current])
-    currentSize--
-    if (currentSize === 0) {
-      index++
-    }
-    return acc
-  }, [])
-}
 
 export const selectMenu = (
   menu: Array<Menu>,
